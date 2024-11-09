@@ -16,7 +16,7 @@ fun PreviewProjectTopBar(){
         Scaffold(
             modifier = Modifier.fillMaxSize()
         ) {
-            CustompProjectTopBar(
+            CustomProjectTopBar(
                 title = "Проекты"
             )
         }

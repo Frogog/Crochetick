@@ -50,6 +50,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -68,16 +69,7 @@ class MainActivity : ComponentActivity() {
                 false,"04.12.2024","05.12.2024", true),
             ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
                 false,"04.12.2024","05.12.2024", true),
-            ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
-                false,"04.12.2024","05.12.2024", true),
-            ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
-                false,"04.12.2024","05.12.2024", true),
-            ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
-                false,"04.12.2024","05.12.2024", true),
-            ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
-                false,"04.12.2024","05.12.2024", true),
-            ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
-                false,"04.12.2024","05.12.2024", true),
+
         )
         val tabDataArrays:List<TabData> = listOf(
             TabData(0,"Начатые"),
@@ -97,8 +89,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CrochetickTheme {
+                var selectedTabIndex by remember {
+                    mutableIntStateOf(0)
+                }
                 Scaffold (
-                    topBar = { CustompProjectTopBar("Проекты") },
+                    topBar = { CustomProjectTopBar("Проекты") },
                     bottomBar = { ProjectBottomBar()}
                 ){innerPadding->
                     Column(modifier = Modifier.padding(innerPadding)){
@@ -109,7 +104,7 @@ class MainActivity : ComponentActivity() {
                                 ProjectCard(
                                     item = item,
                                 )
-                                if (index== projectDataArrays.size-1) Spacer(modifier = Modifier.height(8.dp))
+                                if (index== projectDataArrays.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
                             }
                         }
                     }
@@ -120,12 +115,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CustompProjectTopBar(title: String){
+fun CustomProjectTopBar(title: String){
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(CardSurfaceBrown)
-            .padding(top = 24.dp,bottom = 8.dp),
+            .padding(top = 28.dp,bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -144,7 +139,7 @@ fun ProjectTabRow(){
     }
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
-        modifier = Modifier.padding()
+        modifier = Modifier.shadow(4.dp)
     ) {
         tabDataArrays.forEachIndexed{ index, item ->
             Tab(
@@ -159,15 +154,19 @@ fun ProjectTabRow(){
             )
         }
     }
+    when(selectedTabIndex){
+        0->ProjectList(projectDataArrays.filter { !it.ended })
+        1->ProjectList(projectDataArrays.filter { it.ended })
+    }
 }
 
 @Composable
-fun ProjectCard(item:ProjectData) {
+fun ProjectCard(item:ProjectData, modifier: Modifier = Modifier) {
     CrochetickTheme {
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-            elevation = CardDefaults.elevatedCardElevation(8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp).then(modifier),
+            elevation = CardDefaults.elevatedCardElevation(6.dp)
         )
         {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){
@@ -201,7 +200,6 @@ fun ProjectCard(item:ProjectData) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectBottomBar(){
     var selectedNavIndex by rememberSaveable() {
@@ -231,22 +229,19 @@ fun ProjectBottomBar(){
                 )
             )
         }
-        /*NavigationBarItem(
-            selected = true,
-            onClick = {},
-            icon = {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.home),
-                    contentDescription = "Проекты"
-                )
-            },
-            label = {
-                Text("Проекты")
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent
+    }
+}
+
+@Composable
+fun ProjectList(projectDataArray:List<ProjectData>){
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        itemsIndexed(projectDataArray){index, item ->
+            if (index==0) Spacer(modifier = Modifier.height(8.dp))
+            ProjectCard(
+                item = item,
             )
-        )*/
+            if (index== projectDataArray.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
+        }
     }
 }
 
@@ -267,20 +262,11 @@ fun ProjectBottomBarPreview(){
 fun MainPreview() {
     CrochetickTheme {
         Scaffold (
-            topBar = { CustompProjectTopBar("Проекты") },
+            topBar = { CustomProjectTopBar("Проекты") },
             bottomBar = { ProjectBottomBar()}
         ){innerPadding->
             Column(modifier = Modifier.padding(innerPadding)){
                 ProjectTabRow()
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    itemsIndexed(projectDataArrays){index, item ->
-                        if (index==0) Spacer(modifier = Modifier.height(8.dp))
-                        ProjectCard(
-                            item = item,
-                        )
-                        if (index== projectDataArrays.size-1) Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
             }
         }
     }
