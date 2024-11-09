@@ -2,11 +2,7 @@ package com.example.crochetick
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +16,7 @@ fun PreviewProjectTopBar(){
         Scaffold(
             modifier = Modifier.fillMaxSize()
         ) {
-            ProjectTopBar(
+            CustompProjectTopBar(
                 title = "Проекты"
             )
         }
@@ -37,8 +33,8 @@ fun ProjectTabRowPreview(){
             modifier = Modifier.fillMaxSize(),
         ){
             Column {
-                ProjectTabRow()
             }
         }
     }
 }
+

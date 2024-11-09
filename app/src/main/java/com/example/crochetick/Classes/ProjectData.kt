@@ -7,5 +7,5 @@ data class ProjectData(
     var ended:Boolean,
     var startDate:String,
     var endDate:String,
-    var HasImage:Boolean = false, //Временная переменная
+    var hasImage:Boolean = false, //Временная переменная
 )
