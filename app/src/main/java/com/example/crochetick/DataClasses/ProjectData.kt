@@ -1,4 +1,4 @@
-package com.example.crochetick.Classes
+package com.example.crochetick.DataClasses
 
 data class ProjectData(
     var id:Int,
