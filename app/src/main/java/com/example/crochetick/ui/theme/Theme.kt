@@ -18,11 +18,12 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryBrown,
-    secondary = PurpleGrey80,
+    secondary = SecondaryBrown,
     tertiary = Pink80,
     background = SurfaceBrown,           //Фон позади карточек
     surface = CardSurfaceBrown,          //Фон карточки и Tab
     onSurface = OnCardSurfaceFirstBrown, //Текст загаловка карточки
+    primaryContainer = SecondaryBrown
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

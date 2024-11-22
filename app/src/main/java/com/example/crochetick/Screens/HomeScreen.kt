@@ -1,6 +1,8 @@
 package com.example.crochetick.Screens
 
+import android.drm.DrmStore.RightsStatus
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,9 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -26,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -33,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
 import com.example.crochetick.CustomProjectTopBar
 import com.example.crochetick.DataClasses.ProjectData
@@ -49,6 +57,7 @@ fun HomeScreen(navController: NavController,innerPadding:PaddingValues,currentSc
     CrochetickTheme {
         Column(modifier = Modifier.padding(innerPadding)){
             ProjectTabRow()
+
         }
     }
 }
@@ -61,7 +70,8 @@ fun ProjectTabRow(){
     }
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
-        modifier = Modifier.shadow(4.dp)
+        modifier = Modifier.shadow(4.dp),
+        containerColor =MaterialTheme.colorScheme.background
     ) {
         tabDataArrays.forEachIndexed{ index, item ->
             Tab(
@@ -88,7 +98,7 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp).then(modifier),
-            elevation = CardDefaults.elevatedCardElevation(6.dp)
+            elevation = CardDefaults.elevatedCardElevation(3.dp)
         )
         {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){
@@ -103,10 +113,15 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
                     }
                 }
                 Column{
-                    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)){
+                    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),Arrangement.SpaceBetween){
                         Text(
                             text = item.name,
                             style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = item.startDate,
+                            color = OnCardSurfaceSecondBrown,
+                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                     Row(modifier = Modifier.fillMaxWidth()){
