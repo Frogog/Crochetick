@@ -36,16 +36,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
-import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.crochetick.Activities.Test
 import com.example.crochetick.MainActivity.Companion.navDataArrays
-import com.example.crochetick.Screens.AddProjectScreen
-import com.example.crochetick.Screens.HardTopBar
 import com.example.crochetick.Screens.HomeScreen
 import com.example.crochetick.Screens.LineScreen
 import com.example.crochetick.Screens.SearchScreen
@@ -100,14 +97,16 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         when(currentScreen){
                             "Проекты", "Схемы", "Лента","Настройки"->SimpleTopBar(currentScreen)
-                            "Добавить новый проект" -> HardTopBar(currentScreen,navController)}
+                            //"Добавить новый проект" -> HardTopBar(currentScreen,navController)
+                            }
                         },
                     bottomBar = { ProjectBottomBar(navController) },
                     floatingActionButton = {
                         if (currentScreen=="Проекты"){
                             FloatingActionButton(
                                 onClick = {
-                                    navController.navigate("test")
+                                    intent = Intent(this, Test::class.java)
+                                    startActivity(intent)
                                 },
                                 shape = CircleShape,
                                 modifier = Modifier.size(66.dp),
@@ -135,12 +134,6 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = "settings"){
                             SettingsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
-                        }
-                        composable(route = "addProject") {
-                            AddProjectScreen(navController, innerPadding, currentScreen = { currentScreen = it })
-                        }
-                        composable(route ="test") {
-                            Test()
                         }
                     }
                 }
