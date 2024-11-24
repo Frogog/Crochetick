@@ -16,13 +16,14 @@ import com.example.crochetick.ui.theme.CrochetickTheme
 fun SearchScreen(navController: NavController,innerPadding: PaddingValues,currentScreen: (String) -> Unit){
     currentScreen("Схемы")
     CrochetickTheme {
-        Scaffold (
-            topBar = { CustomProjectTopBar("Схемы") },
-            bottomBar = { ProjectBottomBar(navController) }
-        ){innerPadding->
-            Column(modifier = Modifier.padding(innerPadding)){
-                Text("SearchScreen")
-            }
-        }
+//        Scaffold (
+//            topBar = { CustomProjectTopBar("Схемы") },
+//            bottomBar = { ProjectBottomBar(navController) }
+//        ){innerPadding->
+//            Column(modifier = Modifier.padding(innerPadding)){
+//                Text("SearchScreen")
+//            }
+//        }
+        Text("LineScreen")
     }
 }

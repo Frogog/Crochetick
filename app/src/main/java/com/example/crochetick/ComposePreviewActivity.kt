@@ -8,33 +8,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.crochetick.ui.theme.CrochetickTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true)
-@Composable
-fun PreviewProjectTopBar(){
-    CrochetickTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CustomProjectTopBar(
-                title = "Проекты"
-            )
-        }
-    }
-}
-
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true)
-@Composable
-fun ProjectTabRowPreview(){
-    CrochetickTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ){
-            Column {
-            }
-        }
-    }
-}
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewProjectTopBar(){
+//    CrochetickTheme {
+//        Scaffold(
+//            modifier = Modifier.fillMaxSize()
+//        ) {
+//            CustomProjectTopBar(
+//                title = "Проекты"
+//            )
+//        }
+//    }
+//}
+//
+//
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+//@Preview(showBackground = true)
+//@Composable
+//fun ProjectTabRowPreview(){
+//    CrochetickTheme {
+//        Scaffold(
+//            modifier = Modifier.fillMaxSize(),
+//        ){
+//            Column {
+//            }
+//        }
+//    }
+//}
 

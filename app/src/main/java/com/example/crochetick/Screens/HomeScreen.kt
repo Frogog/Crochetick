@@ -1,6 +1,5 @@
 package com.example.crochetick.Screens
 
-import android.drm.DrmStore.RightsStatus
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,13 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -32,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -40,16 +34,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
 import com.example.crochetick.CustomProjectTopBar
 import com.example.crochetick.DataClasses.ProjectData
 import com.example.crochetick.MainActivity.Companion.projectDataArrays
 import com.example.crochetick.MainActivity.Companion.tabDataArrays
-import com.example.crochetick.ProjectBottomBar
 import com.example.crochetick.R
+import com.example.crochetick.SimpleTopBar
 import com.example.crochetick.ui.theme.CrochetickTheme
-import com.example.crochetick.ui.theme.OnCardSurfaceSecondBrown
+import com.example.crochetick.ui.theme.TextSecond
 
 @Composable
 fun HomeScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit){
@@ -120,14 +113,14 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
                         )
                         Text(
                             text = item.startDate,
-                            color = OnCardSurfaceSecondBrown,
+                            color = TextSecond,
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
                     Row(modifier = Modifier.fillMaxWidth()){
                         Text(
                             text = item.description,
-                            color = OnCardSurfaceSecondBrown,
+                            color = TextSecond,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -155,7 +148,7 @@ fun ProjectList(projectDataArray:List<ProjectData>){
 fun HomePreview() {
     CrochetickTheme {
         Scaffold (
-            topBar = { CustomProjectTopBar("Проекты") },
+            topBar = { CustomProjectTopBar{ SimpleTopBar("Проекты") } },
             //bottomBar = { ProjectBottomBar()}
         ){innerPadding->
             Column(modifier = Modifier.padding(innerPadding)){

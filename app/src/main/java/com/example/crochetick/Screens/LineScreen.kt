@@ -16,13 +16,14 @@ import com.example.crochetick.ui.theme.CrochetickTheme
 fun LineScreen(navController: NavController,innerPadding: PaddingValues,currentScreen: (String) -> Unit){
     currentScreen("Лента")
     CrochetickTheme {
-        Scaffold (
-            topBar = { CustomProjectTopBar("Схемы") },
-            bottomBar = { ProjectBottomBar(navController) }
-        ){innerPadding->
-            Column(modifier = Modifier.padding(innerPadding)){
-                Text("LineScreen")
-            }
-        }
+        Text("LineScreen")
+//        Scaffold (
+//            topBar = { CustomProjectTopBar("Схемы") },
+//            bottomBar = { ProjectBottomBar(navController) }
+//        ){innerPadding->
+//            Column(modifier = Modifier.padding(innerPadding)){
+//                Text("LineScreen")
+//            }
+//        }
     }
 }

@@ -16,13 +16,14 @@ import com.example.crochetick.ui.theme.CrochetickTheme
 fun SettingsScreen(navController: NavController,innerPadding: PaddingValues,currentScreen: (String) -> Unit){
     currentScreen("Настройки")
     CrochetickTheme {
-        Scaffold (
-            topBar = { CustomProjectTopBar("Схемы") },
-            bottomBar = { ProjectBottomBar(navController) }
-        ){innerPadding->
-            Column(modifier = Modifier.padding(innerPadding)){
-                Text("SettingsScreen")
-            }
-        }
+//        Scaffold (
+//            topBar = { CustomProjectTopBar("Схемы") },
+//            bottomBar = { ProjectBottomBar(navController) }
+//        ){innerPadding->
+//            Column(modifier = Modifier.padding(innerPadding)){
+//                Text("SettingsScreen")
+//            }
+//        }
+        Text("LineScreen")
     }
 }
