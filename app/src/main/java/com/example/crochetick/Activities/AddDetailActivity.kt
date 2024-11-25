@@ -61,7 +61,7 @@ class AddDetailActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(Background)
-                                .padding(top = 32.dp,bottom = 8.dp, start = 16.dp,end = 4.dp),
+                                .padding(top = 32.dp,bottom = 8.dp, start = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -69,6 +69,7 @@ class AddDetailActivity : ComponentActivity() {
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(end = 10.dp)
                             ) {
+                                Spacer(modifier = Modifier.width(12.dp))
                                 IconButton(
                                     onClick = {
                                         finish()
@@ -77,7 +78,8 @@ class AddDetailActivity : ComponentActivity() {
                                 ) {
                                     Icon(
                                         imageVector = ImageVector.vectorResource(R.drawable.back_icon),
-                                        contentDescription = "Localized description"
+                                        contentDescription = "Localized description",
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                                 Text(
@@ -89,6 +91,8 @@ class AddDetailActivity : ComponentActivity() {
                                 onClick = {
                                     viewModel.validateForm()
                                 },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.padding(end = 12.dp)
                             ) {
                                 Text(
                                     text = "Готово",
@@ -211,7 +215,7 @@ fun ActivityPreview(innerPadding:PaddingValues = PaddingValues(20.dp,20.dp)) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Background)
-                            .padding(top = 32.dp,bottom = 8.dp, start = 16.dp,end = 4.dp),
+                            .padding(top = 32.dp,bottom = 8.dp, start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -222,13 +226,15 @@ fun ActivityPreview(innerPadding:PaddingValues = PaddingValues(20.dp,20.dp)) {
                             IconButton(
                                 onClick = {
                                 },
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.back_icon),
-                                    contentDescription = "Localized description"
+                                    contentDescription = "Localized description",
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 "Добавить деталь",
                                 style = MaterialTheme.typography.titleLarge
@@ -237,6 +243,8 @@ fun ActivityPreview(innerPadding:PaddingValues = PaddingValues(20.dp,20.dp)) {
                         TextButton(
                             onClick = {
                             },
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.padding(end= 12.dp)
                         ) {
                             Text(
                                 text = "Готово",

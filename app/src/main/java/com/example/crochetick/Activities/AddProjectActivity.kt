@@ -65,46 +65,10 @@ class Test : ComponentActivity() {
             CrochetickTheme {
                 Scaffold (
                     topBar = {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Background)
-                                .padding(top = 32.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(end = 10.dp)
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        finish()
-                                    },
-                                    modifier = Modifier.size(24.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.back_icon),
-                                        contentDescription = "Localized description"
-                                    )
-                                }
-                                Text(
-                                    "Добавить новый проект",
-                                    style = MaterialTheme.typography.titleLarge
-                                )
-                            }
-                            TextButton(
-                                onClick = {
-                                    viewModel.validateForm()
-                                },
-                            ) {
-                                Text(
-                                    text = "Готово",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = TextBright,
-                                )
-                            }
-                        }
+                        ProjectTopBar(
+                            {finish()},
+                            {viewModel.validateForm()}
+                        )
                     },
                 ){innerPadding->
                     MainContent(innerPadding,{goToDetail(this)},viewModel)
@@ -193,6 +157,53 @@ fun MainContent(innerPadding: PaddingValues, goToDetail: ()->Unit, viewModel: Ad
     }
 }
 
+@Composable
+fun ProjectTopBar(
+    onBackClick: () -> Unit,
+    onDoneClick: () -> Unit,
+    ){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Background)
+            .padding(top = 32.dp, bottom = 8.dp, start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(end = 10.dp)
+        ) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier.size(24.dp),
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.back_icon),
+                    contentDescription = "Localized description",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                "Добавить новый проект",
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+        TextButton(
+            onClick = onDoneClick,
+            contentPadding = PaddingValues(0.dp),
+
+            modifier = Modifier.padding(end=12.dp) //Чуть меньше чем в дизайне
+        ) {
+            Text(
+                text = "Готово",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextBright,
+            )
+        }
+    }
+}
 
 
 
@@ -371,7 +382,7 @@ fun HardTopBarTest(title:String){
         modifier = Modifier
             .fillMaxWidth()
             .background(Background)
-            .padding(top = 32.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
+            .padding(top = 32.dp, bottom = 8.dp, start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -386,9 +397,11 @@ fun HardTopBarTest(title:String){
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.back_icon),
-                    contentDescription = "Localized description"
+                    contentDescription = "Localized description",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge
@@ -397,6 +410,9 @@ fun HardTopBarTest(title:String){
         TextButton(
             onClick = {
             },
+            contentPadding = PaddingValues(0.dp),
+
+            modifier = Modifier.padding(end=12.dp) //Чуть меньше чем в дизайне
         ) {
             Text(
                 text = "Готово",
