@@ -90,14 +90,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            //val backStackEntry = navController.currentBackStackEntryAsState()  Нужен может быть для (выбор между реализацией в bottomNav или во внешней) selected = backStackEntry.value?.destination?.route == screen.route,
             var currentScreen by remember { mutableStateOf("Проекты") }
             CrochetickTheme {
                 Scaffold (
                     topBar = {
                         when(currentScreen){
                             "Проекты", "Схемы", "Лента","Настройки"->SimpleTopBar(currentScreen)
-                            //"Добавить новый проект" -> HardTopBar(currentScreen,navController)
                             }
                         },
                     bottomBar = { ProjectBottomBar(navController) },

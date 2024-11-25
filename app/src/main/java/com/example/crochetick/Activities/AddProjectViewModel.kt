@@ -2,33 +2,33 @@ package com.example.crochetick.Activities
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.crochetick.States.ProjectAddState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class AddProjectViewModel :ViewModel(){
-    private val _nameText = mutableStateOf("")
-    val nameText: State<String> = _nameText
+    private val _uiState = MutableStateFlow(ProjectAddState())
+    val uiState :StateFlow<ProjectAddState> = _uiState.asStateFlow()
 
-    private val _descriptionText = mutableStateOf("")
-    val descriptionText: State<String> = _descriptionText
+    private val _rightTitle = mutableStateOf(true)
+    val rightTitle:State<Boolean> = _rightTitle
 
-    private val _rightData = mutableStateOf(true)
-    val rightData:State<Boolean> = _rightData
+    private val _rightDetails = mutableStateOf(true)
+    val rightDetails:State<Boolean> = _rightDetails
 
-    private fun validateName(){
-        _rightData.value = _nameText.value.isNotBlank()
+
+    fun validateForm(){
+        _rightTitle.value = _uiState.value.title.isNotBlank()
+        _rightDetails.value = _uiState.value.details.isNotEmpty()
     }
-    fun validateForm(): Boolean {
-        validateName()
-        return _rightData.value
-    }
-    fun setNameText(nameText: String) {
-        _nameText.value = nameText
+    fun updateTitle(titleText: String) {
+        _uiState.value =_uiState.value.copy(title = titleText)
     }
 
-    fun setDescriptionText(descriptionText: String) {
-        _descriptionText.value = descriptionText
+    fun updateDescription(descriptionText: String) {
+        _uiState.value =_uiState.value.copy(description = descriptionText)
     }
 
 }

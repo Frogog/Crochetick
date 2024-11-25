@@ -17,6 +17,6 @@ val Text = Color(0xFF33241E)
 val TextBright = Color(0xFF705042)
 val TextSecond = Color(0xFF675852)
 
-val SecondaryBrown = Color(0xFFE5C3B2)
+val BrightContrast = Color(0xFFE5C3B2)
 val NavSelect = Color(0xFFAF7D68)
 val LowerNavig= Color(0xFFF7E2D3)

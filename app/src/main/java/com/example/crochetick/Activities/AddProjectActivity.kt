@@ -1,5 +1,7 @@
 package com.example.crochetick.Activities
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,9 +46,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.crochetick.DataClasses.DetailData
 import com.example.crochetick.R
@@ -68,7 +69,7 @@ class Test : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(Background)
-                                .padding(top = 32.dp,bottom = 8.dp, start = 16.dp,end = 4.dp),
+                                .padding(top = 32.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -106,70 +107,95 @@ class Test : ComponentActivity() {
                         }
                     },
                 ){innerPadding->
-                    Box(
-                        modifier = Modifier.padding(innerPadding)
-                    ){
-                        Column{
-                            Column(modifier = Modifier.padding(vertical = 13.dp, horizontal = 20.dp)){
-                                Spacer(modifier = Modifier.height(12.dp).shadow(8.dp))
-//                                var nameText by remember {
-//                                    mutableStateOf("")
-//                                }
-                                OutlinedTextField(
-                                    value = viewModel.nameText.value,
-                                    onValueChange = {viewModel.setNameText(it)},
-                                    label = {
-                                        Row{
-                                            Text("Название", color = TextSecond)
-                                            Text("*", color = Color.Red)
-                                        }
-                                    },
-                                    supportingText = if (!viewModel.rightData.value) {
-                                        { Text("Название обязательно", color = Color.Red) }
-                                    }else null,
-                                    singleLine = true,
-                                    modifier = Modifier.width(210.dp)
-                                )
-//                                val desc = viewModel.nameText
-//                                var descriptionText by remember {
-//                                    mutableStateOf("")
-//                                }
-                                OutlinedTextField(
-                                    value = viewModel.descriptionText.value,
-                                    onValueChange = {viewModel.setDescriptionText(it)},
-                                    label = {Text("Описание", color = TextSecond)},
-                                    modifier = Modifier.fillMaxWidth().height(112.dp),
-                                    minLines = 3,
-                                    maxLines = 3,
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ){
-                                Text("Детали", style = MaterialTheme.typography.bodyLarge)
-                                IconButton(
-                                    onClick = {},
-                                    modifier = Modifier.size(24.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.plus_icon),
-                                        contentDescription = "AddDetail",
-                                        tint = TextSecond
-                                    )
-                                }
-                            }
-                            DetailList()
-                            Spacer(modifier = Modifier.height(24.dp).shadow(8.dp))
-                        }
-                    }
+                    MainContent(innerPadding,{goToDetail(this)},viewModel)
                 }
 
             }
+
         }
     }
 }
+fun goToDetail(context: Context){
+    val intent = Intent(context,AddDetailActivity::class.java)
+    context.startActivity(intent)
+}
+
+@Composable
+fun MainContent(innerPadding: PaddingValues, goToDetail: ()->Unit, viewModel: AddProjectViewModel = viewModel()){
+    val uiState by viewModel.uiState.collectAsState()
+    Box(
+        modifier = Modifier.padding(innerPadding)
+    ){
+        Column{
+            Column(modifier = Modifier.padding(vertical = 12.dp,horizontal = 20.dp)){
+                OutlinedTextField(
+                    value = uiState.title,
+                    onValueChange = {viewModel.updateTitle(it)},
+                    label = {
+                        Row{
+                            Text("Название", color = TextSecond)
+                            Text("*", color = Color.Red)
+                        }
+                    },
+                    supportingText = if (!viewModel.rightTitle.value) {
+                        { Text("Название обязательно", color = Color.Red) }
+                    }else {
+                        { Text("", color = Color.Red) }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.width(210.dp)
+                )
+                OutlinedTextField(
+                    value = uiState.description,
+                    onValueChange = {viewModel.updateDescription(it)},
+                    label = {Text("Описание", color = TextSecond)},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(112.dp),
+                    minLines = 3,
+                    maxLines = 3,
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text("Детали", style = MaterialTheme.typography.bodyLarge)
+                IconButton(
+                    onClick = {
+                        goToDetail()
+                    },
+                    modifier = Modifier.size(24.dp),
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.plus_icon),
+                        contentDescription = "AddDetail",
+                        tint = TextSecond
+                    )
+                }
+            }
+            if (!viewModel.rightDetails.value){
+                Text(
+                    "Добавьте хотя бы одну деталь",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+            DetailList()
+            Spacer(modifier = Modifier
+                .height(24.dp)
+                .shadow(8.dp))
+        }
+    }
+}
+
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewAddScreen(innerPadding: PaddingValues = PaddingValues(20.dp,20.dp)){
@@ -182,8 +208,7 @@ fun PreviewAddScreen(innerPadding: PaddingValues = PaddingValues(20.dp,20.dp)){
                 modifier = Modifier.padding(innerPadding)
             ){
                 Column{
-                    Column(modifier = Modifier.padding(vertical = 13.dp, horizontal = 20.dp)){
-                        Spacer(modifier = Modifier.height(12.dp).shadow(8.dp))
+                    Column(modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)){
                         var nameText by remember {
                             mutableStateOf("")
                         }
@@ -209,13 +234,17 @@ fun PreviewAddScreen(innerPadding: PaddingValues = PaddingValues(20.dp,20.dp)){
                             value = "descriptionText",
                             onValueChange = {descriptionText = it},
                             label = {Text("Описание", color = TextSecond)},
-                            modifier = Modifier.fillMaxWidth().height(112.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(112.dp),
                             minLines = 3,
                             maxLines = 3,
                         )
                     }
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                            .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
@@ -231,8 +260,16 @@ fun PreviewAddScreen(innerPadding: PaddingValues = PaddingValues(20.dp,20.dp)){
                             )
                         }
                     }
+                    Text(
+                        "Добавьте хотя бы одну деталь",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
                     DetailList()
-                    Spacer(modifier = Modifier.height(24.dp).shadow(8.dp))
+                    Spacer(modifier = Modifier
+                        .height(24.dp)
+                        .shadow(8.dp))
                 }
             }
         }
@@ -264,7 +301,9 @@ fun DetailCard(item: DetailData){
         )
     ){
         Row(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 24.dp, vertical = 10.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){
@@ -289,7 +328,7 @@ fun HardTopBar(title:String, navController: NavController){
         modifier = Modifier
             .fillMaxWidth()
             .background(Background)
-            .padding(top = 32.dp,bottom = 8.dp, start = 16.dp,end = 4.dp),
+            .padding(top = 32.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -332,7 +371,7 @@ fun HardTopBarTest(title:String){
         modifier = Modifier
             .fillMaxWidth()
             .background(Background)
-            .padding(top = 32.dp,bottom = 8.dp, start = 16.dp,end = 4.dp),
+            .padding(top = 32.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
