@@ -69,7 +69,6 @@ class AddDetailActivity : ComponentActivity() {
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(end = 10.dp)
                             ) {
-                                Spacer(modifier = Modifier.width(12.dp))
                                 IconButton(
                                     onClick = {
                                         finish()
@@ -82,6 +81,7 @@ class AddDetailActivity : ComponentActivity() {
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Text(
                                     "Добавить деталь",
                                     style = MaterialTheme.typography.titleLarge

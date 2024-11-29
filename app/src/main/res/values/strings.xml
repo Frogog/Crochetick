@@ -2,4 +2,5 @@
     <string name="app_name">Crochetick</string>
     <string name="title_activity_test">Test</string>
     <string name="title_activity_add_detail">AddDetailActivity</string>
+    <string name="title_activity_project_work">ProjectWorkActivity</string>
 </resources>

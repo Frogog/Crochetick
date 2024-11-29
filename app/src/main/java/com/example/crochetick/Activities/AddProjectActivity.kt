@@ -56,7 +56,7 @@ import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.ui.theme.TextSecond
 
 
-class Test : ComponentActivity() {
+class AddProjectActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
