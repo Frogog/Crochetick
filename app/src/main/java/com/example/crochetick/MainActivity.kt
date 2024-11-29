@@ -41,7 +41,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.crochetick.Activities.AddProjectActivity
+import com.example.crochetick.Activities.ProjectWorkActivity
 import com.example.crochetick.MainActivity.Companion.navDataArrays
 import com.example.crochetick.Screens.HomeScreen
 import com.example.crochetick.Screens.LineScreen
@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
                         if (currentScreen=="Проекты"){
                             FloatingActionButton(
                                 onClick = {
-                                    intent = Intent(this, AddProjectActivity::class.java)
+                                    intent = Intent(this, ProjectWorkActivity::class.java)
                                     startActivity(intent)
                                 },
                                 shape = CircleShape,

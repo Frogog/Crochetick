@@ -12,6 +12,7 @@ class AddProjectViewModel :ViewModel(){
     private val _uiState = MutableStateFlow(ProjectAddState())
     val uiState :StateFlow<ProjectAddState> = _uiState.asStateFlow()
 
+
     private val _rightTitle = mutableStateOf(true)
     val rightTitle:State<Boolean> = _rightTitle
 
