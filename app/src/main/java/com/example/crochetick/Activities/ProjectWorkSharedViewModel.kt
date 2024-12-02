@@ -3,11 +3,16 @@ package com.example.crochetick.Activities
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.crochetick.DataClasses.DetailData
+import com.example.crochetick.DataClasses.ProjectData
 import com.example.crochetick.States.DetailAddState
 import com.example.crochetick.States.ProjectAddState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class ProjectWorkSharedViewModel:ViewModel() {
     private val _uiStateProject = MutableStateFlow(ProjectAddState())
@@ -31,6 +36,18 @@ class ProjectWorkSharedViewModel:ViewModel() {
         _uiStateProject.value =_uiStateProject.value.copy(description = descriptionText)
     }
 
+    fun updateDetailsList(detail:DetailData){
+        _uiStateProject.value = _uiStateProject.value.copy(
+            details = _uiStateProject.value.details + detail
+        )
+    }
+
+    fun createProject(project:ProjectData){
+        viewModelScope.launch {
+        }
+    }
+
+
     private val _uiStateDetail = MutableStateFlow(DetailAddState())
     val uiStateDetail : StateFlow<DetailAddState> = _uiStateDetail.asStateFlow()
 
@@ -46,11 +63,20 @@ class ProjectWorkSharedViewModel:ViewModel() {
     private val _rightScheme = mutableStateOf(true)
     val rightScheme: State<Boolean> = _rightScheme
 
-    fun validateFormDetail(){
+    fun validateFormDetail():Boolean{
         _rightName.value = _uiStateDetail.value.name.isNotBlank()
         _rightCount.value = (_uiStateDetail.value.count != 0)
         _rightRowCount.value = _uiStateDetail.value.rowCount != 0
         _rightScheme.value = _uiStateDetail.value.scheme.isNotBlank()
+        return (_rightName.value&&_rightCount.value&&_rightRowCount.value&&_rightScheme.value)
+    }
+
+    fun resetFormDetail(){
+        _uiStateDetail.value = DetailAddState()
+        _rightName.value = true
+        _rightCount.value = true
+        _rightRowCount.value = true
+        _rightScheme.value = true
     }
 
     fun updateName(nameText:String){

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -167,7 +168,7 @@ fun DetailTopBar(
         ) {
             IconButton(
                 onClick = onBackClick,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(16.dp),
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.back_icon),
@@ -195,3 +196,4 @@ fun DetailTopBar(
         }
     }
 }
+

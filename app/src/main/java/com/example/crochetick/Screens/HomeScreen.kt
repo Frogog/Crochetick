@@ -1,5 +1,7 @@
 package com.example.crochetick.Screens
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+import com.example.crochetick.Activities.ProjectDoActivity
 import com.example.crochetick.CustomProjectTopBar
 import com.example.crochetick.DataClasses.ProjectData
 import com.example.crochetick.MainActivity.Companion.projectDataArrays
@@ -88,10 +93,15 @@ fun ProjectTabRow(){
 @Composable
 fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
     CrochetickTheme {
+        val intent = Intent(LocalContext.current,ProjectDoActivity::class.java)
+        val context:Context = LocalContext.current
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp).then(modifier),
-            elevation = CardDefaults.elevatedCardElevation(3.dp)
+            elevation = CardDefaults.elevatedCardElevation(3.dp),
+            onClick = {
+                context.startActivity(intent)
+            }
         )
         {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){

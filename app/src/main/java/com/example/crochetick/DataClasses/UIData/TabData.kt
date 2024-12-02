@@ -1,4 +1,4 @@
-package com.example.crochetick.DataClasses
+package com.example.crochetick.DataClasses.UIData
 
 data class TabData(
     var id:Int,

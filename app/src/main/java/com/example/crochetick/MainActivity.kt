@@ -23,9 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.crochetick.DataClasses.ScreenData
+import com.example.crochetick.DataClasses.UIData.ScreenData
 import com.example.crochetick.DataClasses.ProjectData
-import com.example.crochetick.DataClasses.TabData
+import com.example.crochetick.DataClasses.UIData.TabData
 import com.example.crochetick.ui.theme.CrochetickTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItemDefaults

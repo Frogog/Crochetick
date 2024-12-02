@@ -123,7 +123,7 @@ fun MainContent(innerPadding: PaddingValues,goToDetail:()->Unit,viewModel: Proje
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            DetailList()
+            AddDetailList()
             Spacer(modifier = Modifier
                 .height(24.dp)
                 .shadow(8.dp))
@@ -150,7 +150,7 @@ fun ProjectTopBar(
         ) {
             IconButton(
                 onClick = onBackClick,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(16.dp),
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.back_icon),
@@ -180,15 +180,15 @@ fun ProjectTopBar(
 }
 
 @Composable
-fun DetailList(){
+fun AddDetailList(){
     val DetailDataArrays:List<DetailData> = listOf(
-        DetailData(0,"Ухо"),
-        DetailData(1,"Тело"),
-        DetailData(2,"Лапы")
+        DetailData(0,"Ухо",1,5,0,0,"image","sheme"),
+        DetailData(1,"Тело",1,10,0,0,"image","sheme"),
+        DetailData(2,"Лапы",1,8,0,0,"image","sheme")
     )
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(DetailDataArrays){index, item ->
-            DetailCard(
+            AddDetailCard(
                 item = item,
             )
         }
@@ -196,7 +196,7 @@ fun DetailList(){
 }
 
 @Composable
-fun DetailCard(item: DetailData){
+fun AddDetailCard(item: DetailData){
     Card(
         shape = RectangleShape,
         colors = CardDefaults.cardColors(

@@ -1,5 +1,6 @@
 package com.example.crochetick.ui.theme
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -20,3 +21,7 @@ val TextSecond = Color(0xFF675852)
 val BrightContrast = Color(0xFFE5C3B2)
 val NavSelect = Color(0xFFAF7D68)
 val LowerNavig= Color(0xFFF7E2D3)
+
+val ReadyGreen = Color(0xFF90D55C)
+val DoingYellow = Color(0xFFFFCB5B)
+val NoGray = Color(0xFFA59588)

@@ -1,4 +1,4 @@
-package com.example.crochetick.DataClasses
+package com.example.crochetick.DataClasses.UIData
 
 import com.example.crochetick.R
 
@@ -11,6 +11,6 @@ sealed class ScreenData(
     object Schemes : ScreenData("Схемы",R.drawable.search,"schemes")
     object Line : ScreenData("Лента",R.drawable.line,"line")
     object Settings : ScreenData("Настройки",R.drawable.settings,"settings")
-    object AddProject:ScreenData("Добавить новый проект", R.drawable.line,"addProject")
-    object AddDetail:ScreenData("Добавить деталь", R.drawable.line,"addDetail")
+    object AddProject: ScreenData("Добавить новый проект", R.drawable.line,"addProject")
+    object AddDetail: ScreenData("Добавить деталь", R.drawable.line,"addDetail")
 }

@@ -7,6 +7,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -24,9 +25,9 @@ private val LightColorScheme = lightColorScheme(
     surface = OnBackground,          //Фон карточки и Tab
     onSurface = Text, //Текст загаловка карточки
     primaryContainer = BrightContrast,
-    surfaceVariant = TextSecond,
+    surfaceVariant = OnBackground,
     outline = TextSecond,
-    surfaceContainerHighest = Background,
+    surfaceContainerHighest = OnBackground,
     secondaryContainer = BrightContrast,
     onSecondaryContainer = TextSecond
     /* Other default colors to override
