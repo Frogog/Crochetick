@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +47,7 @@ import com.example.crochetick.Activities.ProjectWorkActivity
 import com.example.crochetick.MainActivity.Companion.navDataArrays
 import com.example.crochetick.Screens.HomeScreen
 import com.example.crochetick.Screens.LineScreen
+import com.example.crochetick.Screens.NotificationsScreen
 import com.example.crochetick.Screens.SearchScreen
 import com.example.crochetick.Screens.SettingsScreen
 import com.example.crochetick.ui.theme.LowerNavig
@@ -94,10 +97,11 @@ class MainActivity : ComponentActivity() {
             CrochetickTheme {
                 Scaffold (
                     topBar = {
-                        when(currentScreen){
-                            "Проекты", "Схемы", "Лента","Настройки"->SimpleTopBar(currentScreen)
-                            }
-                        },
+                        when (currentScreen) {
+                            "Проекты", "Схемы", "Лента", "Настройки" -> SimpleTopBar(currentScreen)
+                            else -> null
+                        }
+                    },
                     bottomBar = { ProjectBottomBar(navController) },
                     floatingActionButton = {
                         if (currentScreen=="Проекты"){
@@ -132,6 +136,35 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = "settings"){
                             SettingsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
+                        }
+                        composable(
+                            route = "notifications",
+                            enterTransition = {
+                                slideIntoContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popEnterTransition = {
+                                slideIntoContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popExitTransition = {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                    animationSpec = tween(300)
+                                )
+                            }
+                        ){
+                            NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                         }
                     }
                 }
@@ -190,8 +223,10 @@ fun ProjectBottomBar(navController: NavController){
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
-                    selectedIconColor = NavSelect,
-                    selectedTextColor = NavSelect
+                    selectedIconColor = com.example.crochetick.ui.theme.Text,
+                    selectedTextColor = com.example.crochetick.ui.theme.Text,
+                    unselectedIconColor = NavSelect,
+                    unselectedTextColor = NavSelect
                 )
             )
         }
@@ -239,6 +274,9 @@ fun MainPreview() {
                 }
                 composable(route = "settings"){
                     SettingsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
+                }
+                composable(route = "notifications") {
+                    NotificationsScreen(navController,innerPadding,currentScreen = {currentScreen=it})
                 }
             }
         }

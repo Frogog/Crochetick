@@ -13,4 +13,5 @@ sealed class ScreenData(
     object Settings : ScreenData("Настройки",R.drawable.settings,"settings")
     object AddProject: ScreenData("Добавить новый проект", R.drawable.line,"addProject")
     object AddDetail: ScreenData("Добавить деталь", R.drawable.line,"addDetail")
+    object Notifications: ScreenData("Уведомления",R.drawable.line,"notifications")
 }
