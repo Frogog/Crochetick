@@ -1,5 +1,6 @@
 package com.example.crochetick.Activities
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -34,6 +35,10 @@ class ProjectWorkSharedViewModel:ViewModel() {
 
     fun updateDescription(descriptionText: String) {
         _uiStateProject.value =_uiStateProject.value.copy(description = descriptionText)
+    }
+
+    fun updateImageProject(imageText: Uri){
+        _uiStateProject.value = _uiStateProject.value.copy(image = imageText)
     }
 
     fun updateDetailsList(detail:DetailData){
@@ -93,7 +98,7 @@ class ProjectWorkSharedViewModel:ViewModel() {
         else _rightRowCount.value =false
     }
 
-    fun updateImage(imageValue:String){
+    fun updateImageDetail(imageValue:Uri){
         _uiStateDetail.value = _uiStateDetail.value.copy(image = imageValue)
     }
 

@@ -1,9 +1,11 @@
 package com.example.crochetick.States
 
+import android.net.Uri
+
 data class DetailAddState(
     val name:String="",
     val count:Int=0,
     val rowCount:Int=0,
-    val image:String="",
+    val image: Uri?=null,
     val scheme:String=""
 )
