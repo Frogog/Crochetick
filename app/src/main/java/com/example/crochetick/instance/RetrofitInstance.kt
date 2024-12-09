@@ -1,6 +1,6 @@
 package com.example.crochetick.instance
 
-import com.example.crochetick.ApiInterface.ApiInterface
+import com.example.crochetick.apiInterface.ApiInterface
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

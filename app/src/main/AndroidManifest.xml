@@ -13,22 +13,22 @@
         android:theme="@style/Theme.Crochetick"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.ProjectDoActivity"
+            android:name=".activitiy.ProjectDoActivity"
             android:exported="false"
             android:label="@string/title_activity_project_do"
             android:theme="@style/Theme.Crochetick" />
         <activity
-            android:name=".Activities.ProjectWorkActivity"
+            android:name=".activitiy.ProjectWorkActivity"
             android:exported="false"
             android:label="@string/title_activity_project_work"
             android:theme="@style/Theme.Crochetick" />
         <activity
-            android:name=".Activities.AddDetailActivity"
+            android:name=".activitiy.AddDetailActivity"
             android:exported="false"
             android:label="@string/title_activity_add_detail"
             android:theme="@style/Theme.Crochetick" />
         <activity
-            android:name=".Activities.AddProjectActivity"
+            android:name=".activitiy.AddProjectActivity"
             android:exported="false"
             android:label="@string/title_activity_test"
             android:theme="@style/Theme.Crochetick" />
