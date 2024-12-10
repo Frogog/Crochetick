@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.screen.DetailsAll
 import com.example.crochetick.screen.ShowDetail
 import com.example.crochetick.ui.theme.CrochetickTheme
+import com.example.crochetick.viewModel.ProjectDoViewModel
 
 class ProjectDoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +24,7 @@ class ProjectDoActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            val viewModel:ProjectDoViewModel by viewModels()
+            val viewModel: ProjectDoViewModel by viewModels()
             CrochetickTheme {
                 NavHost(
                     navController,

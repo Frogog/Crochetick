@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.crochetick.activitiy.ProjectWorkSharedViewModel
+import com.example.crochetick.viewModel.ProjectWorkSharedViewModel
 import com.example.crochetick.R
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme

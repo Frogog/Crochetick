@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.screen.AddDetailScreen
 import com.example.crochetick.screen.AddProjectScreen
 import com.example.crochetick.ui.theme.CrochetickTheme
+import com.example.crochetick.viewModel.ProjectWorkSharedViewModel
 
 class ProjectWorkActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +26,7 @@ class ProjectWorkActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             //var currentScreen by remember { mutableStateOf("Проекты") }
-            val viewModel:ProjectWorkSharedViewModel by viewModels()
+            val viewModel: ProjectWorkSharedViewModel by viewModels()
             CrochetickTheme {
                 NavHost(
                     navController = navController,

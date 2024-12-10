@@ -1,4 +1,4 @@
-package com.example.crochetick.activitiy
+package com.example.crochetick.viewModel
 
 //
 //class AddDetailViewModel:ViewModel() {

@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.crochetick.activitiy.ProjectDoViewModel
+import com.example.crochetick.viewModel.ProjectDoViewModel
 import com.example.crochetick.R
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.BrightContrast

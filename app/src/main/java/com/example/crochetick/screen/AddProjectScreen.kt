@@ -46,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.crochetick.activitiy.ProjectWorkSharedViewModel
+import com.example.crochetick.viewModel.ProjectWorkSharedViewModel
 import com.example.crochetick.dataClass.DetailData
 import com.example.crochetick.R
 import com.example.crochetick.ui.theme.Background
