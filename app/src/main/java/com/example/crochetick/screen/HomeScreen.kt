@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import com.example.crochetick.MainActivity.Companion.projectDataArrays
 import com.example.crochetick.MainActivity.Companion.tabDataArrays
 import com.example.crochetick.R
 import com.example.crochetick.SimpleTopBar
+import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextSecond
 import com.example.crochetick.viewModel.HomeViewModel
@@ -68,6 +70,8 @@ fun ProjectTabRow(viewModel: HomeViewModel = viewModel()){
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
     }
+    val projects by viewModel.projects.collectAsState()
+
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = Modifier.shadow(4.dp),
@@ -86,14 +90,17 @@ fun ProjectTabRow(viewModel: HomeViewModel = viewModel()){
                 )
         }
     }
+
     when(selectedTabIndex){
-        0-> ProjectList(projectDataArrays.filter { !it.ended })
-        1-> ProjectList(projectDataArrays.filter { it.ended })
+        //0-> ProjectList(projectDataArrays.filter { !it.ended })
+        //1-> ProjectList(projectDataArrays.filter { it.ended })
+        0-> ProjectList(projects.filter { !it.done })
+        1-> ProjectList(projects.filter { it.done })
     }
 }
 
 @Composable
-fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
+fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
     CrochetickTheme {
         val intent = Intent(LocalContext.current,ProjectDoActivity::class.java)
         val context:Context = LocalContext.current
@@ -107,7 +114,7 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
         )
         {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){
-                if (item.hasImage){
+                if (item.imageName!=""){
                     Column(modifier= Modifier.padding(end = 8.dp)) {
                         Image(
                             painter = painterResource(id = R.drawable.cow),
@@ -120,21 +127,23 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
                 Column{
                     Row(modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),Arrangement.SpaceBetween){
                         Text(
-                            text = item.name,
+                            text = item.title,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
-                            text = item.startDate,
+                            text = item.dateStart,
                             color = TextSecond,
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
                     Row(modifier = Modifier.fillMaxWidth()){
-                        Text(
-                            text = item.description,
-                            color = TextSecond,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        item.description?.let {
+                            Text(
+                                text = it,
+                                color = TextSecond,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
             }
@@ -143,7 +152,7 @@ fun ProjectCard(item: ProjectData, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ProjectList(projectDataArray:List<ProjectData>){
+fun ProjectList(projectDataArray:List<ProjectDBTable>){
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(projectDataArray){index, item ->
             if (index==0) Spacer(modifier = Modifier.height(8.dp))

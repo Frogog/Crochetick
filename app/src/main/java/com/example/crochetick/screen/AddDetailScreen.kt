@@ -50,12 +50,21 @@ import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.ui.theme.TextSecond
 
 @Composable
-fun AddDetailScreen(navController: NavController, onBack:()->Unit, onValidate:()->Unit, viewModel: ProjectWorkSharedViewModel){
+fun AddDetailScreen(navController: NavController, viewModel: ProjectWorkSharedViewModel){
     Scaffold (
         topBar = {
             DetailTopBar(
-                onBack,
-                onValidate
+                {
+                    navController.popBackStack()
+                    viewModel.resetFormDetail()
+                },
+                {
+                    if (viewModel.validateFormDetail()){
+                        viewModel.updateDetailsList()
+                        navController.popBackStack()
+                        viewModel.resetFormDetail()
+                    }
+                }
             )
         },
     ){innerPadding->
@@ -115,7 +124,8 @@ fun MainContent(innerPadding:PaddingValues, viewModel: ProjectWorkSharedViewMode
             )
         }
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -133,7 +143,9 @@ fun MainContent(innerPadding:PaddingValues, viewModel: ProjectWorkSharedViewMode
         }
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp)
         ){
             Column{
                 ImagePickerButton(viewModel)
@@ -149,7 +161,9 @@ fun MainContent(innerPadding:PaddingValues, viewModel: ProjectWorkSharedViewMode
                 )
             }
         }
-        Spacer(modifier = Modifier.height(24.dp).shadow(8.dp))
+        Spacer(modifier = Modifier
+            .height(24.dp)
+            .shadow(8.dp))
     }
 }
 
@@ -203,7 +217,8 @@ fun TestAddDetail(){
                     )
                 }
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -219,7 +234,9 @@ fun TestAddDetail(){
                 )
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
                 ){
                     Column{
                         ImagePickerButton()
@@ -235,7 +252,9 @@ fun TestAddDetail(){
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(24.dp).shadow(8.dp))
+                Spacer(modifier = Modifier
+                    .height(24.dp)
+                    .shadow(8.dp))
             }
         }
     }

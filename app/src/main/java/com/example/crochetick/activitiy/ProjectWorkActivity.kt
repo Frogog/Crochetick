@@ -59,22 +59,10 @@ class ProjectWorkActivity : ComponentActivity() {
                     composable(route = "addProject"){
                         AddProjectScreen(navController,
                             {finish()},
-                            {viewModel.validateFormProject()},
                             viewModel)
                     }
                     composable(route = "addDetail"){
-                        AddDetailScreen(navController,
-                            {
-                                navController.popBackStack()
-                                viewModel.resetFormDetail()
-                            },
-                            {
-                                if (viewModel.validateFormDetail()){
-                                    navController.popBackStack()
-                                    viewModel.resetFormDetail()
-                                }
-                            },
-                            viewModel)
+                        AddDetailScreen(navController,viewModel)
                     }
                 }
             }

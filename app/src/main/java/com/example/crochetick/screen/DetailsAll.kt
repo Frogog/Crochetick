@@ -61,9 +61,9 @@ fun DetailsAll(
 fun MainContent(innerPadding:PaddingValues,onClick:()->Unit){
     Column(modifier = Modifier.padding(innerPadding)) {
         val detailDataArrays:List<DetailData> = listOf(
-            DetailData(0,"Ухо",5,1,4,5,"image","sheme"),
-            DetailData(1,"Тело",1,10,1,0,"image","sheme"),
-            DetailData(2,"Лапы",1,8,0,0,"image","sheme")
+            DetailData(0,"Ухо",5,1,4,5,null,"sheme"),
+            DetailData(1,"Тело",1,10,1,0,null,"sheme"),
+            DetailData(2,"Лапы",1,8,0,0,null,"sheme")
         )
         DetailList(detailDataArrays,onClick)
     }

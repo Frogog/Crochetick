@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crochetick.dataClass.DetailData
-import com.example.crochetick.dataClass.ProjectData
+import com.example.crochetick.dataClass.model.DetailDBTable
+import com.example.crochetick.dataClass.model.ProjectDBTable
+import com.example.crochetick.repositories.CrochetickRepository
 import com.example.crochetick.state.DetailAddState
 import com.example.crochetick.state.ProjectAddState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +26,10 @@ class ProjectWorkSharedViewModel:ViewModel() {
     private val _rightDetails = mutableStateOf(true)
     val rightDetails: State<Boolean> = _rightDetails
 
-    fun validateFormProject(){
+    fun validateFormProject():Boolean{
         _rightTitle.value = _uiStateProject.value.title.isNotBlank()
         _rightDetails.value = _uiStateProject.value.details.isNotEmpty()
+        return (_rightTitle.value&&_rightDetails.value)
     }
     fun updateTitle(titleText: String) {
         _uiStateProject.value =_uiStateProject.value.copy(title = titleText)
@@ -40,17 +43,43 @@ class ProjectWorkSharedViewModel:ViewModel() {
         _uiStateProject.value = _uiStateProject.value.copy(image = imageText)
     }
 
-    fun updateDetailsList(detail:DetailData){
+    fun updateDetailsList(){
+            val detail = DetailData(
+            id = 0,
+            title = _uiStateDetail.value.name,
+            count = _uiStateDetail.value.count,
+            rowCount =  _uiStateDetail.value.rowCount,
+            detailsReady = 0,
+            rowsReady = 0,
+            image = _uiStateDetail.value.image,
+            scheme = _uiStateDetail.value.scheme
+        )
         _uiStateProject.value = _uiStateProject.value.copy(
             details = _uiStateProject.value.details + detail
         )
     }
 
-    fun createProject(project:ProjectData){
-        viewModelScope.launch {
-        }
+    fun deleteDetail(index:Int){
+        _uiStateProject.value = _uiStateProject.value.copy(
+            details = _uiStateProject.value.details.filterIndexed{i,_->i!=index}
+        )
     }
 
+    fun createFullProject(project: ProjectDBTable,details: List<DetailDBTable>){
+        viewModelScope.launch {
+            CrochetickRepository.instance.insertProjectWithDetails(project,details)
+        }
+    }
+//    fun createProject(project: ProjectDBTable){
+//        viewModelScope.launch {
+//             CrochetickRepository.instance.insertProject(project)
+//        }
+//    }
+//
+//    fun createDetail(detail: DetailDBTable){
+//        viewModelScope.launch {
+//        }
+//    }
 
     private val _uiStateDetail = MutableStateFlow(DetailAddState())
     val uiStateDetail : StateFlow<DetailAddState> = _uiStateDetail.asStateFlow()
@@ -64,15 +93,21 @@ class ProjectWorkSharedViewModel:ViewModel() {
     private val _rightRowCount = mutableStateOf(true)
     val rightRowCount: State<Boolean> = _rightRowCount
 
+    private val _rightImage = mutableStateOf(true)
+    val rightImage: State<Boolean> = _rightImage
+
     private val _rightScheme = mutableStateOf(true)
     val rightScheme: State<Boolean> = _rightScheme
+
+
 
     fun validateFormDetail():Boolean{
         _rightName.value = _uiStateDetail.value.name.isNotBlank()
         _rightCount.value = (_uiStateDetail.value.count != 0)
         _rightRowCount.value = _uiStateDetail.value.rowCount != 0
+        _rightImage.value = _uiStateDetail.value.image!=null
         _rightScheme.value = _uiStateDetail.value.scheme.isNotBlank()
-        return (_rightName.value&&_rightCount.value&&_rightRowCount.value&&_rightScheme.value)
+        return (_rightName.value&&_rightCount.value&&_rightRowCount.value&&(_rightScheme.value||_rightImage.value))
     }
 
     fun resetFormDetail(){
@@ -80,6 +115,7 @@ class ProjectWorkSharedViewModel:ViewModel() {
         _rightName.value = true
         _rightCount.value = true
         _rightRowCount.value = true
+        _rightImage.value = true
         _rightScheme.value = true
     }
 
@@ -104,4 +140,6 @@ class ProjectWorkSharedViewModel:ViewModel() {
     fun updateScheme(schemeText:String){
         _uiStateDetail.value = _uiStateDetail.value.copy(scheme = schemeText)
     }
+
+
 }

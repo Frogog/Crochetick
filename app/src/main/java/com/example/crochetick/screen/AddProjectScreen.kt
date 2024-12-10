@@ -1,6 +1,13 @@
 package com.example.crochetick.screen
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -19,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -41,9 +49,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.crochetick.viewModel.ProjectWorkSharedViewModel
@@ -54,15 +64,56 @@ import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.ui.theme.TextSecond
 import coil.compose.AsyncImage
+import com.example.crochetick.TrashCan.Usual
+import com.example.crochetick.dataClass.model.DetailDBTable
+import com.example.crochetick.dataClass.model.ProjectDBTable
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.time.LocalDate
 
 @Composable
-fun AddProjectScreen(navController: NavController,onBack:()->Unit,onValidate:()->Unit,viewModel: ProjectWorkSharedViewModel){
+fun AddProjectScreen(navController: NavController,onBack:()->Unit, viewModel: ProjectWorkSharedViewModel){
     Scaffold (
         topBar = {
+            val context = LocalContext.current
             ProjectTopBar(
-                onBack,
-                onValidate
-            )
+                onBack
+            ) {
+                if (viewModel.validateFormProject()) {
+                    val uiState = viewModel.uiStateProject
+                    var imageNameProject:String?= null
+                    if (uiState.value.image!=null){
+                        imageNameProject = saveImage(uiState.value.image!!, context,"ProjectImages")
+                    }
+                    val project =  ProjectDBTable(
+                        title = uiState.value.title,
+                        description = uiState.value.description,
+                        dateStart = Usual.RuToEn(LocalDate.now().toString()),
+                        dateEnd = null,
+                        imageName = imageNameProject
+                    )
+
+                    var imageNameDetail:String?= null
+                    val details = mutableListOf<DetailDBTable>()
+                    uiState.value.details.forEach{item->
+                        if (item.image!=null){
+                            imageNameDetail = saveImage(item.image, context,"DetailImages")
+                        }
+                        details += DetailDBTable(
+                            projectIdFK = 0,
+                            titleDetail = item.title,
+                            countDetails = item.count,
+                            countRow = item.rowCount,
+                            doneDetails = 0,
+                            doneRows = 0,
+                            schemaImage = imageNameDetail,
+                            schemaText = item.scheme
+                        )
+                    }
+                    viewModel.createFullProject(project,details)
+                }
+            }
         },
     ){innerPadding->
         MainContent(innerPadding,{navController.navigate("addDetail")},viewModel)
@@ -112,6 +163,20 @@ fun MainContent(innerPadding: PaddingValues,goToDetail:()->Unit,viewModel: Proje
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 10.dp, bottom = 8.dp))
                 ImagePickerButton(viewModel)
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            viewModel.uiStateProject.value.details.size.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        viewModel.uiStateProject.value.image?.let { saveImage(it,context,"ProjectImages") }
+
+                    }
+                ) {
+                    Text("Проверка массва")
+                }
             }
             Row(
                 modifier = Modifier
@@ -142,7 +207,8 @@ fun MainContent(innerPadding: PaddingValues,goToDetail:()->Unit,viewModel: Proje
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            AddDetailList()
+            AddDetailList(viewModel)
+
             Spacer(modifier = Modifier
                 .height(24.dp)
                 .shadow(8.dp))
@@ -316,23 +382,27 @@ fun ProjectTopBar(
 }
 
 @Composable
-fun AddDetailList(){
-    val DetailDataArrays:List<DetailData> = listOf(
-        DetailData(0,"Ухо",1,5,0,0,"image","sheme"),
-        DetailData(1,"Тело",1,10,0,0,"image","sheme"),
-        DetailData(2,"Лапы",1,8,0,0,"image","sheme")
-    )
+fun AddDetailList(viewModel: ProjectWorkSharedViewModel = viewModel()){
+//    val DetailDataArrays:List<DetailData> = listOf(
+//        DetailData(0,"Ухо",1,5,0,0,null,"sheme"),
+//        DetailData(1,"Тело",1,10,0,0,null,"sheme"),
+//        DetailData(2,"Лапы",1,8,0,0,null,"sheme")
+//    )
+    val uiState = viewModel.uiStateProject.collectAsState()
+    val details = uiState.value.details
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(DetailDataArrays){index, item ->
+        itemsIndexed(details){index, item ->
             AddDetailCard(
-                item = item,
-            )
+                item = item
+            ) {
+                viewModel.deleteDetail(index)
+            }
         }
     }
 }
 
 @Composable
-fun AddDetailCard(item: DetailData){
+fun AddDetailCard(item: DetailData,onDelete:()->Unit){
     Card(
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
@@ -348,7 +418,7 @@ fun AddDetailCard(item: DetailData){
         ){
             Text(item.title, style = MaterialTheme.typography.bodyLarge)
             IconButton(
-                onClick = {},
+                onClick = onDelete,
                 modifier = Modifier.size(24.dp),
             ) {
                 Icon(
@@ -358,5 +428,45 @@ fun AddDetailCard(item: DetailData){
                 )
             }
         }
+    }
+}
+
+fun saveImage(uri: Uri, context: Context, folderName: String): String {
+    // Создаем директорию, если её нет
+    val dir = File(context.filesDir, folderName).apply {
+        if (!exists()) mkdirs()
+    }
+
+    // Генерируем уникальное имя файла
+    val timestamp = System.currentTimeMillis()
+    val imageName = "IMG_$timestamp"
+
+    // Создаем файл
+    val imageFile = File(dir, "$imageName.jpg")
+
+    try {
+        // Открываем потоки
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            FileOutputStream(imageFile).use { output ->
+                // Создаем bitmap с правильными параметрами
+                val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+                } else {
+                    @Suppress("DEPRECATION")
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                }
+
+                // Сжимаем и сохраняем
+                if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)) {
+                    throw IOException("Ошибка при сжатии изображения")
+                }
+            }
+        } ?: throw IOException("Не удалось открыть входной поток")
+
+        return imageName
+
+    } catch (e: Exception) {
+        Log.e("SaveImage", "Ошибка при сохранении изображения", e)
+        throw e
     }
 }
