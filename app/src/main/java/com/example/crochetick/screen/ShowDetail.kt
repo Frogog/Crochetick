@@ -41,6 +41,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -59,7 +60,9 @@ import java.io.File
 fun ShowDetail(navController: NavController, onBack:()->Unit, viewModel: ProjectDoViewModel){
     Scaffold(
         topBar = {
-            SingleDetailTopBar(onBack)
+            SingleDetailTopBar(
+                viewModel.uiStateProjectDo.value.projectTitle,
+                onBack)
         }
     ) {innerPadding->
         val uiState = viewModel.uiStateProjectDo.collectAsState()
@@ -87,7 +90,7 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
         }
 
         if (uiState.value.currentDetail?.schemaText !=null) ScrollableText(uiState.value.currentDetail?.schemaText!!)
-        RowIndicator()
+        RowIndicator(viewModel,uiState)
     }
 }
 
@@ -118,7 +121,7 @@ fun testDetail(){
                         "aldkalkdmadlkmadandjkadkjahduadhadiadadboadbadbadaodasn"+
                         "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj"
                 )
-                RowIndicator()
+                //RowIndicator()
             }
         }
     }
@@ -154,8 +157,8 @@ fun ScrollableText(
     }
 }
 @Composable
-fun RowIndicator(){
-    val openAlertDialog = remember { mutableStateOf(false) }
+fun RowIndicator(viewModel: ProjectDoViewModel,uiState: State<ProjectDoState>){
+    var openAlertDialog = remember { mutableStateOf(false) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -164,7 +167,7 @@ fun RowIndicator(){
             style = MaterialTheme.typography.titleMedium
         )
         Text(
-            "0/1",
+             uiState.value.doneDetails.toString() +"/"+uiState.value.countDetails.toString(),
             style = MaterialTheme.typography.titleLarge
         )
         Column(
@@ -177,7 +180,9 @@ fun RowIndicator(){
                 modifier = Modifier.fillMaxWidth()
             ){
                 Button(
-                    onClick = {},
+                    onClick = {
+                        viewModel.decreaseRowCount()
+                    },
                     contentPadding = PaddingValues(0.dp),
                     shape = CircleShape,
                     modifier = Modifier.size(55.dp),
@@ -191,12 +196,22 @@ fun RowIndicator(){
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
-                Text(
-                    "0",
-                    style = MaterialTheme.typography.displayLarge
-                )
+                if (uiState.value.doneDetails==uiState.value.countDetails){
+                    Text(
+                        uiState.value.countRow.toString(),
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                }
+                else{
+                    Text(
+                        (uiState.value.doneRows-(uiState.value.countRow*uiState.value.doneDetails)).toString(),
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                }
                 Button(
-                    onClick = {},
+                    onClick = {
+                        viewModel.increaseRowCount()
+                    },
                     contentPadding = PaddingValues(0.dp),
                     shape = CircleShape,
                     modifier = Modifier.size(55.dp),
@@ -211,33 +226,49 @@ fun RowIndicator(){
                     )
                 }
             }
+            if (uiState.value.doneDetails==uiState.value.countDetails){
+                Text(
+                    uiState.value.countRow.toString()+"/"+uiState.value.countRow.toString(),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+            else{
+                Text(
+                    (uiState.value.doneRows-(uiState.value.countRow*uiState.value.doneDetails)).toString()+"/"+uiState.value.countRow.toString(),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+        }
+        if (uiState.value.doneDetails==uiState.value.countDetails) {
             Text(
-                "0/25",
-                style = MaterialTheme.typography.titleLarge
+                "Все детали готовы",
+                style = MaterialTheme.typography.labelLarge,
+                color = TextSecond
             )
         }
-        Button(
-            onClick = {openAlertDialog.value = true },
-            colors = ButtonDefaults.buttonColors(
-                contentColor = TextSecond,
-                containerColor = BrightContrast
-            )
-        ){
-            Text(
-                "Закончить деталь",
-                style = MaterialTheme.typography.labelSmall
-            )
+        else{
+            Button(
+                onClick = { openAlertDialog.value = true },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = TextSecond,
+                    containerColor = BrightContrast
+                )
+            ) {
+                Text(
+                    "Закончить деталь",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = TextSecond
+                )
+            }
         }
         if (openAlertDialog.value) {
-//            AlertDialogExample(
-//                onDismissRequest = { openAlertDialog.value = false },
-//                onConfirmation = {
-//                    openAlertDialog.value = false
-//                    println("Confirmation registered")
-//                },
-//                dialogTitle = "Alert dialog example",
-//                dialogText = "This is an example of an alert dialog with buttons.",
-//            )
+            AlertDialogExample(
+                onDismiss = { openAlertDialog.value = false },
+                onConfirm = {
+                    viewModel.skipDetail()
+                    openAlertDialog.value = false
+                }
+            )
         }
     }
 }
@@ -245,7 +276,8 @@ fun RowIndicator(){
 @Preview(showBackground = true)
 @Composable
 fun AlertDialogExample(
-
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
 ) {
     CrochetickTheme {
         AlertDialog(
@@ -256,12 +288,12 @@ fun AlertDialogExample(
                 Text("Вы уверены, что хотите закончить деталь?")
             },
             onDismissRequest = {
-
+                onDismiss()
             },
             dismissButton = {
                 TextButton(
                     onClick = {
-
+                        onDismiss()
                     }
                 ) {
                     Text(
@@ -273,7 +305,7 @@ fun AlertDialogExample(
             confirmButton = {
                 TextButton(
                     onClick = {
-
+                        onConfirm()
                     }
                 ) {
                     Text(
@@ -283,13 +315,13 @@ fun AlertDialogExample(
                 }
             },
             containerColor = OnBackground,
-
         )
     }
 }
 
 @Composable
 fun SingleDetailTopBar(
+    title:String,
     onBackClick: () -> Unit
 ){
     Row(
@@ -316,7 +348,7 @@ fun SingleDetailTopBar(
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                "Тело",
+                title,
                 style = MaterialTheme.typography.titleLarge
             )
         }

@@ -109,6 +109,7 @@ fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
     CrochetickTheme {
         val intent = Intent(LocalContext.current,ProjectDoActivity::class.java).apply {
             putExtra("projectId",item.projectId)
+            putExtra("projectTitle",item.title)
         }
         val context:Context = LocalContext.current
         ElevatedCard(modifier = Modifier
