@@ -56,6 +56,7 @@ fun DetailsAll(
 ){
     Scaffold(
         topBar = { DetailsAllTopBar(
+            viewModel.uiStateProjectDo.value.projectTitle,
             onBack
         )}
     ) {innerPadding->
@@ -191,6 +192,7 @@ fun TestDetail(){
 
 @Composable
 fun DetailsAllTopBar(
+    title:String,
     onBackClick: () -> Unit
 ){
     Surface(
@@ -223,7 +225,7 @@ fun DetailsAllTopBar(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    "Корова",
+                    title,
                     style = MaterialTheme.typography.titleLarge
                 )
             }

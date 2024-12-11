@@ -28,7 +28,8 @@ class ProjectDoActivity : ComponentActivity() {
             val viewModel: ProjectDoViewModel by viewModels()
 
             val projectId = intent.getLongExtra("projectId", -1)
-            viewModel.updateProjectId(projectId)
+            val projectTitle = intent.getStringExtra("projectTitle")?:"Деталь"
+            viewModel.updateProject(projectId,projectTitle)
 
             CrochetickTheme {
                 NavHost(
