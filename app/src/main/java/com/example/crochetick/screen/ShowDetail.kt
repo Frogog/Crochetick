@@ -27,26 +27,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.crochetick.viewModel.ProjectDoViewModel
 import com.example.crochetick.R
+import com.example.crochetick.state.ProjectDoState
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.BrightContrast
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.NavSelect
 import com.example.crochetick.ui.theme.OnBackground
 import com.example.crochetick.ui.theme.TextSecond
+import java.io.File
 
 @Composable
 fun ShowDetail(navController: NavController, onBack:()->Unit, viewModel: ProjectDoViewModel){
@@ -55,34 +62,31 @@ fun ShowDetail(navController: NavController, onBack:()->Unit, viewModel: Project
             SingleDetailTopBar(onBack)
         }
     ) {innerPadding->
-        MainContentShowDetail(innerPadding,)
+        val uiState = viewModel.uiStateProjectDo.collectAsState()
+        MainContentShowDetail(innerPadding,viewModel,uiState)
     }
 }
 
 @Composable
-fun MainContentShowDetail(innerPaddingValues: PaddingValues,){
+fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDoViewModel,uiState: State<ProjectDoState>){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth().padding(innerPaddingValues)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.cow),
-            contentDescription = "Изображение",
-            modifier = Modifier.size(200.dp),
-            contentScale = ContentScale.Crop
-        )
-        ScrollableText("asdsadadasdadadd" +
-                "sadadad" +
-                "sadadas" +
-                "dadsadasd" +
-                "adsasdas" +
-                "dasda" +
-                "asdad" +
-                "juju j njn n nm nm mn "+
-                "adsadadadadasdasd"+
-                "aldkalkdmadlkmadandjkadkjahduadhadiadadboadbadbadaodasn"+
-                "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj"
-        )
+        if (uiState.value.currentDetail?.schemaImage !=null){
+            val imageFile = File(LocalContext.current.filesDir, "DetailImages/${uiState.value.currentDetail?.schemaImage}.jpg")
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(imageFile)
+                    .build(),
+                contentDescription = "Изображение",
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        if (uiState.value.currentDetail?.schemaText !=null) ScrollableText(uiState.value.currentDetail?.schemaText!!)
         RowIndicator()
     }
 }

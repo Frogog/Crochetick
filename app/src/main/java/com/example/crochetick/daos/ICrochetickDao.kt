@@ -16,6 +16,9 @@ interface ICrochetickDao {
     @Query("SELECT * FROM projectDBTable")
     fun getAllProjects(): Flow<List<ProjectDBTable>>
 
+    @Query("SELECT * FROM detailDBTable WHERE projectIdFK = :projectId")
+    fun getAllDetailsByProject(projectId:Long):Flow<List<DetailDBTable>>
+
     @Insert
     suspend fun insertProject(projectDBTable: ProjectDBTable):Long
 

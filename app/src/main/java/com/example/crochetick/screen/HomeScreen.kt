@@ -2,6 +2,7 @@ package com.example.crochetick.screen
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.crochetick.activitiy.ProjectDoActivity
 import com.example.crochetick.CustomProjectTopBar
 import com.example.crochetick.dataClass.ProjectData
@@ -48,10 +51,12 @@ import com.example.crochetick.MainActivity.Companion.projectDataArrays
 import com.example.crochetick.MainActivity.Companion.tabDataArrays
 import com.example.crochetick.R
 import com.example.crochetick.SimpleTopBar
+import com.example.crochetick.TrashCan.Usual
 import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextSecond
 import com.example.crochetick.viewModel.HomeViewModel
+import java.io.File
 
 @Composable
 fun HomeScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit){
@@ -102,7 +107,9 @@ fun ProjectTabRow(viewModel: HomeViewModel = viewModel()){
 @Composable
 fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
     CrochetickTheme {
-        val intent = Intent(LocalContext.current,ProjectDoActivity::class.java)
+        val intent = Intent(LocalContext.current,ProjectDoActivity::class.java).apply {
+            putExtra("projectId",item.projectId)
+        }
         val context:Context = LocalContext.current
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
@@ -116,12 +123,19 @@ fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){
                 if (item.imageName!=""){
                     Column(modifier= Modifier.padding(end = 8.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.cow),
-                            contentDescription = "Изображение",
-                            modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
+                        if (item.imageName!=null){
+                            val imageFile = File(context.filesDir, "ProjectImages/${item.imageName}.jpg")
+                            AsyncImage(
+                                model = ImageRequest
+                                    .Builder(context)
+                                    .data(imageFile)
+                                    .build(),
+                                contentDescription = "Изображение",
+                                modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop,
+                                //error = painterResource(id = R.drawable.error_image)
+                            )
+                        }
                     }
                 }
                 Column{
@@ -131,7 +145,7 @@ fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
-                            text = item.dateStart,
+                            text = Usual.EnToRu(item.dateStart),
                             color = TextSecond,
                             style = MaterialTheme.typography.bodySmall,
                         )

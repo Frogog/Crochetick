@@ -1,5 +1,6 @@
 package com.example.crochetick.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,16 +26,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.crochetick.viewModel.ProjectDoViewModel
 import com.example.crochetick.dataClass.DetailData
 import com.example.crochetick.R
+import com.example.crochetick.dataClass.model.DetailDBTable
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.DoingYellow
@@ -45,7 +52,6 @@ import com.example.crochetick.ui.theme.ReadyGreen
 fun DetailsAll(
     navController: NavController,
     onBack:()->Unit,
-    onClick:()->Unit,
     viewModel: ProjectDoViewModel
 ){
     Scaffold(
@@ -53,24 +59,32 @@ fun DetailsAll(
             onBack
         )}
     ) {innerPadding->
-        MainContent(innerPadding,onClick)
+        MainContent(
+            innerPadding,
+            {detailId->
+                viewModel.updateCurrentDetail(detailId)
+                navController.navigate("showDetail")
+            },
+            viewModel)
     }
 }
 
 @Composable
-fun MainContent(innerPadding:PaddingValues,onClick:()->Unit){
+fun MainContent(innerPadding:PaddingValues,onClick:(detailId:Long)->Unit,viewModel: ProjectDoViewModel){
     Column(modifier = Modifier.padding(innerPadding)) {
-        val detailDataArrays:List<DetailData> = listOf(
-            DetailData(0,"Ухо",5,1,4,5,null,"sheme"),
-            DetailData(1,"Тело",1,10,1,0,null,"sheme"),
-            DetailData(2,"Лапы",1,8,0,0,null,"sheme")
-        )
-        DetailList(detailDataArrays,onClick)
+
+        val uiState = viewModel.uiStateProjectDo.collectAsState()
+
+        LaunchedEffect(Unit) {//uiState.value.projectId можно указать его прям так, чтобы он обновлялся при изменении projectId
+            viewModel.getAllDetailsByProject()
+        }
+
+        DetailList(uiState.value.details,onClick)
     }
 }
 
 @Composable
-fun DetailList(detailList:List<DetailData>,onClick:()->Unit){
+fun DetailList(detailList:List<DetailDBTable>,onClick:(detailId:Long)->Unit){
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(detailList){index, item ->
             if (index==0) Spacer(modifier = Modifier.height(24.dp))
@@ -81,7 +95,7 @@ fun DetailList(detailList:List<DetailData>,onClick:()->Unit){
 }
 
 @Composable
-fun DetailCard(item:DetailData,onClick:()->Unit){
+fun DetailCard(item:DetailDBTable,onClick:(detailId:Long)->Unit){
     Card( modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 8.dp, vertical = 4.dp,),
@@ -90,7 +104,7 @@ fun DetailCard(item:DetailData,onClick:()->Unit){
         }
     ){
         var colorBackground:Modifier = Modifier.background(ReadyGreen)
-        if (item.detailsReady>0&&item.detailsReady<item.count) colorBackground= Modifier.background(DoingYellow) else if (item.detailsReady==0) colorBackground= Modifier.background(
+        if (item.doneDetails>0&&item.doneDetails<item.countDetails) colorBackground= Modifier.background(DoingYellow) else if (item.doneDetails==0) colorBackground= Modifier.background(
             NoGray)
         Row(
             modifier = Modifier.fillMaxWidth().padding(end = 8.dp).height(IntrinsicSize.Min),
@@ -109,11 +123,11 @@ fun DetailCard(item:DetailData,onClick:()->Unit){
                 Column(
                     modifier = Modifier.padding(top = 12.dp, bottom = 12.dp, start = 8.dp, end = 16.dp)
                 ) {
-                    Text(item.title, style = MaterialTheme.typography.titleSmall)
-                    Text(item.detailsReady.toString()+"/"+item.count.toString(), style = MaterialTheme.typography.bodySmall)
+                    Text(item.titleDetail, style = MaterialTheme.typography.titleSmall)
+                    Text(item.doneDetails.toString()+"/"+item.countDetails.toString(), style = MaterialTheme.typography.bodySmall)
                 }
                 IconButton(
-                    onClick = onClick,
+                    onClick = { onClick(item.detailId) },
                     modifier = Modifier.size(24.dp),
                 ) {
                     Icon(

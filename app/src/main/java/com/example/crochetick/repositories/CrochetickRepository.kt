@@ -14,6 +14,8 @@ class CrochetickRepository {
 
     fun getAllProjects(): Flow<List<ProjectDBTable>> = crochetickDao.getAllProjects()
 
+    fun getAllDetailsByProject(projectId:Long):Flow<List<DetailDBTable>> = crochetickDao.getAllDetailsByProject(projectId)
+
     suspend fun insertProject(projectDBTable: ProjectDBTable):Long {
         return crochetickDao.insertProject(projectDBTable)
     }

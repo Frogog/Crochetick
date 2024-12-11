@@ -89,7 +89,7 @@ fun AddProjectScreen(navController: NavController,onBack:()->Unit, viewModel: Pr
                     val project =  ProjectDBTable(
                         title = uiState.value.title,
                         description = uiState.value.description,
-                        dateStart = Usual.RuToEn(LocalDate.now().toString()),
+                        dateStart = LocalDate.now().toString(),
                         dateEnd = null,
                         imageName = imageNameProject
                     )
@@ -112,6 +112,7 @@ fun AddProjectScreen(navController: NavController,onBack:()->Unit, viewModel: Pr
                         )
                     }
                     viewModel.createFullProject(project,details)
+                    onBack()
                 }
             }
         },
@@ -171,8 +172,6 @@ fun MainContent(innerPadding: PaddingValues,goToDetail:()->Unit,viewModel: Proje
                             viewModel.uiStateProject.value.details.size.toString(),
                             Toast.LENGTH_SHORT
                         ).show()
-                        viewModel.uiStateProject.value.image?.let { saveImage(it,context,"ProjectImages") }
-
                     }
                 ) {
                     Text("Проверка массва")

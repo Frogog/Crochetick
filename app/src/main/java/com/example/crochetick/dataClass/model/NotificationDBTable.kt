@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "norificationDBTable")
 data class NotificationDBTable(
-    @PrimaryKey(autoGenerate = true)val noticationId:Int=0,
+    @PrimaryKey(autoGenerate = true)val noticationId:Long=0,
     @ColumnInfo(name = "hour") val hour:Int,
     @ColumnInfo(name="minute") val minute:Int,
     @ColumnInfo(name = "turnOn") val turnOn:Boolean=false

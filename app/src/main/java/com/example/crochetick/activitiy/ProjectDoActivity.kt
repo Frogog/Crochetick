@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +26,10 @@ class ProjectDoActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val viewModel: ProjectDoViewModel by viewModels()
+
+            val projectId = intent.getLongExtra("projectId", -1)
+            viewModel.updateProjectId(projectId)
+
             CrochetickTheme {
                 NavHost(
                     navController,
@@ -55,7 +60,7 @@ class ProjectDoActivity : ComponentActivity() {
                     }
                 ) {
                     composable(route="detailsAll") {
-                        DetailsAll(navController,{finish()},{navController.navigate("showDetail")},viewModel)
+                        DetailsAll(navController,{finish()},viewModel)
                     }
                     composable(route="showDetail") {
                         ShowDetail(navController,{navController.popBackStack()},viewModel)
@@ -63,14 +68,5 @@ class ProjectDoActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    CrochetickTheme {
-        Text("Android")
     }
 }
