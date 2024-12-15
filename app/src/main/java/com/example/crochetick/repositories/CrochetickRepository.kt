@@ -12,13 +12,22 @@ class CrochetickRepository {
         val instance = CrochetickRepository()
     }
 
+    fun getProject(projectId:Long):ProjectDBTable = crochetickDao.getProject(projectId)
+
     fun getAllProjects(): Flow<List<ProjectDBTable>> = crochetickDao.getAllProjects()
 
     fun getAllDetailsByProject(projectId:Long):Flow<List<DetailDBTable>> = crochetickDao.getAllDetailsByProject(projectId)
 
+    suspend fun checkDoneDetail(projectId:Long):Long = crochetickDao.checkDoneDetail(projectId)
+
     suspend fun insertProject(projectDBTable: ProjectDBTable):Long {
         return crochetickDao.insertProject(projectDBTable)
     }
+    suspend fun updateDetailCount(detail:DetailDBTable) = crochetickDao.updateDetailCount(detail)
+
+    suspend fun updateProject(project: ProjectDBTable) = crochetickDao.updateProject(project)
 
     suspend fun insertProjectWithDetails(project:ProjectDBTable, details:List<DetailDBTable>) = crochetickDao.InsertProjectWithDetails(project,details)
+
+    suspend fun updateDoneProject(projectId: Long) = crochetickDao.UpdateDoneProject(projectId)
 }

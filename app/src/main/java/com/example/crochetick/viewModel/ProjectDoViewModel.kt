@@ -1,8 +1,11 @@
 package com.example.crochetick.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.crochetick.dataClass.model.DetailDBTable
+import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.repositories.CrochetickRepository
 import com.example.crochetick.state.ProjectAddState
 import com.example.crochetick.state.ProjectDoState
@@ -10,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class ProjectDoViewModel:ViewModel() {
 
@@ -34,7 +38,7 @@ class ProjectDoViewModel:ViewModel() {
 
     fun updateCurrentDetail(detailId:Long){
         _uiStateProjectDo.value = _uiStateProjectDo.value.copy(detailId = detailId)
-        _uiStateProjectDo.value = _uiStateProjectDo.value.copy(currentDetail = _uiStateProjectDo.value.details[_uiStateProjectDo.value.details.indexOfFirst { it.projectIdFK == _uiStateProjectDo.value.projectId }])
+        _uiStateProjectDo.value = _uiStateProjectDo.value.copy(currentDetail = _uiStateProjectDo.value.details[_uiStateProjectDo.value.details.indexOfFirst { it.detailId == _uiStateProjectDo.value.detailId }])
         if (_uiStateProjectDo.value.currentDetail!=null){
             _uiStateProjectDo.value = _uiStateProjectDo.value.copy(
                 countDetails = _uiStateProjectDo.value.currentDetail!!.countDetails,
@@ -67,4 +71,30 @@ class ProjectDoViewModel:ViewModel() {
         )
     }
 
+    fun doDetail(){
+        if (_uiStateProjectDo.value.currentDetail!=null){
+            val detail = DetailDBTable(
+                _uiStateProjectDo.value.detailId,
+                _uiStateProjectDo.value.projectId,
+                _uiStateProjectDo.value.currentDetail!!.titleDetail,
+                _uiStateProjectDo.value.countDetails,
+                _uiStateProjectDo.value.countRow,
+                _uiStateProjectDo.value.currentDetail!!.schemaText,
+                _uiStateProjectDo.value.currentDetail!!.schemaImage,
+                _uiStateProjectDo.value.doneDetails,
+                _uiStateProjectDo.value.doneRows
+            )
+            viewModelScope.launch {
+                CrochetickRepository.instance.updateDetailCount(
+                    detail
+                )
+
+            }
+        }
+    }
+    fun checkDoneDetail(){
+        viewModelScope.launch {
+            CrochetickRepository.instance.updateDoneProject(_uiStateProjectDo.value.projectId)
+        }
+    }
 }

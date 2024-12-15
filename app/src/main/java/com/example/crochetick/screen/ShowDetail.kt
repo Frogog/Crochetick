@@ -57,12 +57,19 @@ import com.example.crochetick.ui.theme.TextSecond
 import java.io.File
 
 @Composable
-fun ShowDetail(navController: NavController, onBack:()->Unit, viewModel: ProjectDoViewModel){
+fun ShowDetail(navController: NavController, viewModel: ProjectDoViewModel){
     Scaffold(
         topBar = {
-            SingleDetailTopBar(
-                viewModel.uiStateProjectDo.value.projectTitle,
-                onBack)
+            viewModel.uiStateProjectDo.value.currentDetail?.let {
+                SingleDetailTopBar(
+                    title = it.titleDetail,
+                    onBackClick = {
+                        viewModel.doDetail()
+                        viewModel.checkDoneDetail()
+                        navController.popBackStack()
+                    }
+                )
+            }
         }
     ) {innerPadding->
         val uiState = viewModel.uiStateProjectDo.collectAsState()

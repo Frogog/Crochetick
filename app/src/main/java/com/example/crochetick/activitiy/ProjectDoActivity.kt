@@ -64,7 +64,7 @@ class ProjectDoActivity : ComponentActivity() {
                         DetailsAll(navController,{finish()},viewModel)
                     }
                     composable(route="showDetail") {
-                        ShowDetail(navController,{navController.popBackStack()},viewModel)
+                        ShowDetail(navController,viewModel)
                     }
                 }
             }
