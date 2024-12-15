@@ -79,6 +79,17 @@ interface ICrochetickDao {
                 Log.d("Database", "Project DONE")
             }
             else {
+                val project = getProject(projectId)
+                val updateProject = ProjectDBTable(
+                    project.projectId,
+                    project.title,
+                    project.description,
+                    project.imageName,
+                    false,
+                    project.dateStart,
+                    null
+                )
+                updateProject(updateProject)
                 Log.d("Database", "Project NOT DONE")
             }
         }catch (e: Exception) {
