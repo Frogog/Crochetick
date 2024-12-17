@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,6 +54,7 @@ import com.example.crochetick.screen.SettingsScreen
 import com.example.crochetick.ui.theme.LowerNavig
 import com.example.crochetick.ui.theme.NavSelect
 import com.example.crochetick.ui.theme.Background
+import com.example.crochetick.viewModel.SettingsViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -94,6 +96,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             var currentScreen by remember { mutableStateOf("Проекты") }
+            val settingsViewModel:SettingsViewModel = viewModel()
             CrochetickTheme {
                 Scaffold (
                     topBar = {
@@ -142,29 +145,29 @@ class MainActivity : ComponentActivity() {
                             enterTransition = {
                                 slideIntoContainer(
                                     towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                    animationSpec = tween(300)
+                                    animationSpec = tween(150)
                                 )
                             },
                             exitTransition = {
                                 slideOutOfContainer(
                                     towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                    animationSpec = tween(300)
+                                    animationSpec = tween(150)
                                 )
                             },
                             popEnterTransition = {
                                 slideIntoContainer(
                                     towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                    animationSpec = tween(300)
+                                    animationSpec = tween(150)
                                 )
                             },
                             popExitTransition = {
                                 slideOutOfContainer(
                                     towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                    animationSpec = tween(300)
+                                    animationSpec = tween(150)
                                 )
                             }
                         ){
-                            NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
+                            NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it },settingsViewModel)
                         }
                     }
                 }
@@ -239,6 +242,7 @@ fun MainPreview() {
     val navController = rememberNavController()
     //val backStackEntry = navController.currentBackStackEntryAsState()  Нужен может быть для (выбор между реализацией в bottomNav или во внешней) selected = backStackEntry.value?.destination?.route == screen.route,
     var currentScreen by remember { mutableStateOf("Проекты") }
+    val settingsViewModel:SettingsViewModel = viewModel()
     CrochetickTheme {
         Scaffold (
             topBar = { CustomProjectTopBar{ SimpleTopBar(currentScreen) } },
@@ -276,7 +280,7 @@ fun MainPreview() {
                     SettingsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                 }
                 composable(route = "notifications") {
-                    NotificationsScreen(navController,innerPadding,currentScreen = {currentScreen=it})
+                    NotificationsScreen(navController,innerPadding,currentScreen = {currentScreen=it},settingsViewModel)
                 }
             }
         }

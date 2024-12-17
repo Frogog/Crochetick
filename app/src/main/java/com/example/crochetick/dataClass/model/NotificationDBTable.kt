@@ -10,4 +10,6 @@ data class NotificationDBTable(
     @ColumnInfo(name = "hour") val hour:Int,
     @ColumnInfo(name="minute") val minute:Int,
     @ColumnInfo(name = "turnOn") val turnOn:Boolean=false
-)
+){
+
+}

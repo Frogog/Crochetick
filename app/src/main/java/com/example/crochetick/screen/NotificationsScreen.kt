@@ -27,23 +27,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.ProjectBottomBar
 import com.example.crochetick.R
+import com.example.crochetick.dataClass.model.NotificationDBTable
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextSecond
+import com.example.crochetick.viewModel.SettingsViewModel
 import java.util.Calendar
 
 @Composable
-fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit){
+fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit, viewModel: SettingsViewModel){
     currentScreen("Уведомления")
     CrochetickTheme {
         Scaffold(
@@ -57,8 +61,8 @@ fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,
             ) {
                 NotificationSwitch()
                 Spacer(Modifier.height(8.dp))
-                val notificationArray:List<String> = listOf("20:10","11:59")
-                NotificationList(notificationArray)
+                val uiState = viewModel.uiStateNotification.collectAsState()
+                NotificationList(uiState.value.notificationList)
             }
         }
     }
@@ -66,10 +70,13 @@ fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,
 
 @Preview(showBackground = true)
 @Composable
-fun TestNotifications(title: String = "Уведомления",navController:NavController = rememberNavController()){
+fun TestNotifications(title: String = "Уведомления",navController:NavController = rememberNavController(),viewModel: SettingsViewModel = viewModel()){
     CrochetickTheme {
         Scaffold(
-            topBar = { NotificationTopBar({navController.popBackStack()},{navController.navigate("")}) },
+            topBar = { NotificationTopBar(
+                {navController.popBackStack()}
+                ,{navController.navigate("")}
+            )},
             bottomBar = { ProjectBottomBar(navController) },
             modifier = Modifier.fillMaxSize()
         ) {innerPadding->
@@ -81,7 +88,11 @@ fun TestNotifications(title: String = "Уведомления",navController:Nav
             ) {
                 NotificationSwitch()
                 Spacer(Modifier.height(8.dp))
-                val notificationArray:List<String> = listOf("20:10","11:59")
+                val notificationArray:List<NotificationDBTable> = listOf(
+                    NotificationDBTable(0,1,20,false),
+                    NotificationDBTable(0,10,15,false),
+                    NotificationDBTable(0,18,0,false)
+                )
                 NotificationList(notificationArray)
             }
         }
@@ -126,7 +137,7 @@ fun InputExample(
 }
 
 @Composable
-fun NotificationList(notificationArray:List<String>){
+fun NotificationList(notificationArray:List<NotificationDBTable>){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -141,7 +152,7 @@ fun NotificationList(notificationArray:List<String>){
 
 
 @Composable
-fun NotificationCard(title: String){
+fun NotificationCard(item:NotificationDBTable){
     Card(
         modifier = Modifier.fillMaxWidth()
     ){
@@ -153,7 +164,7 @@ fun NotificationCard(title: String){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                title,
+                item.hour.toString()+":"+item.minute.toString(),
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(
@@ -180,11 +191,12 @@ fun NotificationSwitch(){
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            "Включить уведомления",
+            "Включить уведомления"
         )
         Switch(
             checked = true,
-            onCheckedChange = {}
+            onCheckedChange = {
+            }
         )
     }
 }

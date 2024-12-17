@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.crochetick"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.crochetick"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -81,4 +81,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+    implementation(kotlin("script-runtime"))
+    implementation(libs.androidx.work.runtime.ktx)
 }

@@ -9,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.crochetick.dataClass.model.DetailDBTable
+import com.example.crochetick.dataClass.model.NotificationDBTable
 import com.example.crochetick.dataClass.model.ProjectDBTable
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -26,6 +27,9 @@ interface ICrochetickDao {
 
     @Query("SELECT * FROM detailDBTable WHERE projectIdFK = :projectId")
     fun getAllDetailsByProject(projectId:Long):Flow<List<DetailDBTable>>
+
+    @Query("SELECT * FROM norificationDBTable")
+    fun getAllNotifications():Flow<List<NotificationDBTable>>
 
     @Query("SELECT COUNT(*) FROM detailDBTable WHERE projectIdFK = :projectId AND doneDetails!=countDetails")
     suspend fun checkDoneDetail(projectId: Long):Long
