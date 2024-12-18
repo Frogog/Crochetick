@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -40,11 +41,17 @@ interface ICrochetickDao {
     @Insert
     suspend fun insertDetails(details: List<DetailDBTable>)
 
+    @Insert
+    suspend fun insertNotification(notification: NotificationDBTable)
+
     @Update
     suspend fun updateProject(project:ProjectDBTable)
 
     @Update
     suspend fun updateDetailCount(detail:DetailDBTable)
+
+    @Delete
+    suspend fun deleteNotification(notification: NotificationDBTable)
 
     @Transaction
     suspend fun InsertProjectWithDetails(project: ProjectDBTable, details: List<DetailDBTable>) {

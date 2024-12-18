@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -46,6 +47,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.activitiy.ProjectWorkActivity
 import com.example.crochetick.MainActivity.Companion.navDataArrays
+import com.example.crochetick.dataStore.SettingsDataStore
 import com.example.crochetick.screen.HomeScreen
 import com.example.crochetick.screen.LineScreen
 import com.example.crochetick.screen.NotificationsScreen
@@ -55,9 +57,14 @@ import com.example.crochetick.ui.theme.LowerNavig
 import com.example.crochetick.ui.theme.NavSelect
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.viewModel.SettingsViewModel
+import com.example.crochetick.viewModel.SettingsViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
+    private val settingsDataStore by lazy { SettingsDataStore(applicationContext) }
+    private val SettingsViewModel: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(settingsDataStore)
+    }
     companion object {
         val projectDataArrays:List<ProjectData> = listOf(
             ProjectData(0,"Первый","Описание первого проекта",true,"01.12.2024","02.12.2024",),
@@ -94,9 +101,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             val navController = rememberNavController()
             var currentScreen by remember { mutableStateOf("Проекты") }
-            val settingsViewModel:SettingsViewModel = viewModel()
+            //val settingsViewModel:SettingsViewModel = viewModel()
             CrochetickTheme {
                 Scaffold (
                     topBar = {
@@ -167,7 +175,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         ){
-                            NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it },settingsViewModel)
+                            NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it },SettingsViewModel)
                         }
                     }
                 }

@@ -83,4 +83,5 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(kotlin("script-runtime"))
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.datastore.preferences)
 }

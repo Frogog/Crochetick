@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,14 +25,24 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerColors
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,18 +53,23 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.ProjectBottomBar
 import com.example.crochetick.R
 import com.example.crochetick.dataClass.model.NotificationDBTable
+import com.example.crochetick.state.SettingsState
 import com.example.crochetick.ui.theme.Background
+import com.example.crochetick.ui.theme.BrightContrast
 import com.example.crochetick.ui.theme.CrochetickTheme
+import com.example.crochetick.ui.theme.OnBackground
+import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.ui.theme.TextSecond
 import com.example.crochetick.viewModel.SettingsViewModel
 import java.util.Calendar
+import kotlin.time.TimeSource
 
 @Composable
 fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit, viewModel: SettingsViewModel){
     currentScreen("Уведомления")
     CrochetickTheme {
         Scaffold(
-            topBar = { NotificationTopBar({navController.popBackStack()},{navController.navigate("")}) },
+            topBar = { NotificationTopBar({navController.popBackStack()},{viewModel.updateShowDialog(true)}) },
         ) {innerPadding->
             Column(
                 modifier = Modifier
@@ -59,10 +77,12 @@ fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                NotificationSwitch()
-                Spacer(Modifier.height(8.dp))
                 val uiState = viewModel.uiStateNotification.collectAsState()
-                NotificationList(uiState.value.notificationList)
+                NotificationSwitch(viewModel)
+                Spacer(Modifier.height(8.dp))
+                //Text(uiState.value.selectedTime.get(Calendar.HOUR_OF_DAY).toString())
+                NotificationList(uiState.value.notificationList,viewModel)
+                InputExample(viewModel,uiState)
             }
         }
     }
@@ -99,45 +119,152 @@ fun TestNotifications(title: String = "Уведомления",navController:Nav
     }
 }
 
-@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputExample(
 //    onConfirm: () -> Unit,
 //    onDismiss: () -> Unit,
+    viewModel: SettingsViewModel= viewModel(),
+    uiState: State<SettingsState>
 ) {
     CrochetickTheme {
-        val currentTime = Calendar.getInstance()
+        val uiState = viewModel.uiStateNotification.collectAsState()
+        var selectedTime by remember { mutableStateOf(Calendar.getInstance()) }
 
-        val timePickerState = rememberTimePickerState(
-            initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-            initialMinute = currentTime.get(Calendar.MINUTE),
-            is24Hour = true,
-        )
-        Box{
-            Column(
-                modifier = Modifier.padding()
-            ) {
-                Text("Введите время")
-                TimeInput(
-                    state = timePickerState,
+        Column {
+            if (uiState.value.showDialog) {
+                BasicAlertDialog(
+                    onDismissRequest = { viewModel.updateShowDialog(false) },
+                    content = {
+                        InputExampleNewest(
+                            onConfirm = { hour, minute ->
+                                uiState.value.selectedTime.set(Calendar.HOUR_OF_DAY, hour)
+                                uiState.value.selectedTime.set(Calendar.MINUTE, minute)
+                                val notification = NotificationDBTable(
+                                    hour = uiState.value.selectedTime.get(Calendar.HOUR_OF_DAY),
+                                    minute = uiState.value.selectedTime.get(Calendar.MINUTE)
+                                )
+                                viewModel.insertNotification(notification)
+                                viewModel.updateShowDialog(false)
+                            },
+                            onDismiss = {
+                                viewModel.updateShowDialog(false)
+                            }
+                        )
+                    }
                 )
-                Row{
-                    Button(onClick = {  }) {
-                        Text("Отмена")
-                    }
-                    Button(onClick = {  }) {
-                        Text("Ок")
-                    }
-                }
             }
         }
     }
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationList(notificationArray:List<NotificationDBTable>){
+fun InputExampleNewest(
+    onConfirm: (hour: Int, minute: Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val currentTime = Calendar.getInstance()
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true,
+    )
+
+    Surface(
+        modifier = Modifier.padding(16.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = Background
+    ) {
+        Box{
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)  // Увеличиваем внутренний отступ
+                    .fillMaxWidth()  // Опционально: заполняем всю доступную ширину
+            ) {
+                Text(
+                    "Введите время",
+                    modifier = Modifier.padding(start = 12.dp ,bottom = 16.dp),  // Добавляем отступ после заголовка
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TimeInput(
+                        state = timePickerState,
+                        modifier = Modifier.padding(vertical = 8.dp),  // Добавляем отступы вокруг TimeInput
+                        colors = TimePickerDefaults.colors(
+                            timeSelectorSelectedContentColor = TextBright,
+                        )
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp),
+                        horizontalArrangement = Arrangement.End // Изменено на SpaceBetween
+                    ) {
+
+                        TextButton(
+                            onClick = {
+                                onDismiss()
+                            },
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.padding() //Чуть меньше чем в дизайне
+                        ) {
+                            Text(
+                                text = "Отмена",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = TextSecond
+                            )
+                        }
+                        TextButton(
+                            onClick = {
+                                onConfirm(timePickerState.hour, timePickerState.minute)
+                            },
+                            contentPadding = PaddingValues(0.dp),
+
+                            modifier = Modifier.padding() //Чуть меньше чем в дизайне
+                        ) {
+                            Text(
+                                text = "ОК",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = TextSecond
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = 140.dp)
+                .background(
+                    color = Background,
+                    shape = RoundedCornerShape(4.dp)
+                ),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Часы",
+                modifier = Modifier.offset(x = (-64).dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecond
+            )
+            Text(
+                "Минуты",
+                modifier = Modifier.offset(x = (24).dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecond
+            )
+        }
+    }
+}
+
+@Composable
+fun NotificationList(notificationArray:List<NotificationDBTable>, viewModel: SettingsViewModel= viewModel()){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -145,14 +272,14 @@ fun NotificationList(notificationArray:List<NotificationDBTable>){
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         itemsIndexed(notificationArray){index, item ->
-            NotificationCard(item)
+            NotificationCard(item, viewModel)
         }
     }
 }
 
 
 @Composable
-fun NotificationCard(item:NotificationDBTable){
+fun NotificationCard(item:NotificationDBTable,viewModel: SettingsViewModel){
     Card(
         modifier = Modifier.fillMaxWidth()
     ){
@@ -168,7 +295,15 @@ fun NotificationCard(item:NotificationDBTable){
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(
-                onClick = {},
+                onClick = {
+                    viewModel.deleteNotification(
+                        NotificationDBTable(
+                            item.noticationId,
+                            item.hour,
+                            item.minute
+                        )
+                    )
+                },
                 modifier = Modifier.size(48.dp),
             ) {
                 Icon(
@@ -182,7 +317,8 @@ fun NotificationCard(item:NotificationDBTable){
 }
 
 @Composable
-fun NotificationSwitch(){
+fun NotificationSwitch(viewModel: SettingsViewModel= viewModel()){
+    val switchState by viewModel.switchState.collectAsState()
     Row(
         modifier = Modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
@@ -194,8 +330,10 @@ fun NotificationSwitch(){
             "Включить уведомления"
         )
         Switch(
-            checked = true,
+            checked = switchState,
             onCheckedChange = {
+                viewModel.setSwitchState(it)
+                viewModel.toggleNotifications(it)
             }
         )
     }

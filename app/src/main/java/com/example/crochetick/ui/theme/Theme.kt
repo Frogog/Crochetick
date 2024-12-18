@@ -29,7 +29,8 @@ private val LightColorScheme = lightColorScheme(
     outline = TextSecond,
     surfaceContainerHighest = OnBackground,
     secondaryContainer = BrightContrast,
-    onSecondaryContainer = TextSecond
+    onSecondaryContainer = TextSecond,
+    onTertiaryContainer = TextBright,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

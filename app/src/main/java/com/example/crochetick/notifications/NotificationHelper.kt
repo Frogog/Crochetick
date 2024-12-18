@@ -12,38 +12,40 @@ import com.example.crochetick.R
 
 class NotificationHelper(private val context: Context) {
     companion object {
-        const val CHANNEL_ID = "reminder_channel_v1"
+        const val CHANNEL_ID = "reminder_channel_v2"
     }
     init {
         createNotificationChannel()
     }
 
     private fun createNotificationChannel() {
-        // Создаем URI для звука
-        val soundUri = Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification_sound)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Создаем URI для звука
+            val soundUri =
+                Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification_sound)
 
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-            .build()
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build()
 
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Напоминания",
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = "Канал для напоминаний"
-            setSound(soundUri, audioAttributes)
-            enableVibration(true)
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Напоминания",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Канал для напоминаний"
+                setSound(soundUri, audioAttributes)
+                enableVibration(true)
+            }
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
         }
-        Log.d("Mes","")
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
     }
 
     fun showNotification(notificationId:Long, title: String, message: String) {
         val soundUri = Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification_sound)
-
+        Log.d("Mes", "$notificationId $title")
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
@@ -53,6 +55,6 @@ class NotificationHelper(private val context: Context) {
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.notify(notificationId.toInt(), builder.build())
+        notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
     }
 }
