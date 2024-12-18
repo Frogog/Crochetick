@@ -1,5 +1,8 @@
 package com.example.crochetick.viewModel
 
+import android.app.NotificationManager
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -46,18 +50,12 @@ class SettingsViewModel(
         }
     }
 
-//    fun getAllNotifications(){
-//        viewModelScope.launch {
-//            CrochetickRepository.instance.getAllNotifications()
-//                .collect { notifications ->
-//                    _uiStateNotification.value =  _uiStateNotification.value.copy(notificationList = notifications)
-//                }
-//        }
-//    }
-
     fun insertNotification(notification: NotificationDBTable){
         viewModelScope.launch {
             CrochetickRepository.instance.insertNotification(notification)
+            if (switchState.value){
+                scheduleNotification(notification.noticationId.toInt(),notification.hour,notification.minute)
+            }
         }
     }
 
@@ -77,7 +75,7 @@ class SettingsViewModel(
         }
     }
 
-    fun scheduleNotification(notificationId:Int,title:String, message:String, hour: Int, minute: Int) {
+    fun scheduleNotification(notificationId:Int, hour: Int, minute: Int) {
         val workManager = WorkManager.getInstance()
 
         // Создаем календарь с нужным временем
@@ -93,8 +91,8 @@ class SettingsViewModel(
 
         // Создаем данные для Worker
         val data = workDataOf(
-            "title" to title,
-            "message" to message,
+            "title" to "Напоминание",
+            "message" to "Пора вязать!",
             "notificationId" to notificationId.toLong()
         )
 
@@ -105,7 +103,7 @@ class SettingsViewModel(
                 calendar.timeInMillis - System.currentTimeMillis(),
                 TimeUnit.MILLISECONDS
             )
-            .addTag("Notifications")
+            .addTag("notification_$notificationId")
             .build()
 
         // Запускаем Worker
@@ -113,34 +111,31 @@ class SettingsViewModel(
     }
 
     fun toggleNotifications(enable:Boolean){
-        if (enable){
-            viewModelScope.launch {
-                CrochetickRepository.instance.getAllNotifications().collect { list ->
-                    list.forEach{ item->
-                        scheduleNotification(
-                            item.noticationId.toInt(),
-                            "Напоминание",
-                            "saads",
-                            item.hour,
-                            item.minute
-                        )
-                    }
+        viewModelScope.launch {
+            if (enable){
+                // Используем first() вместо collect
+                val notifications = CrochetickRepository.instance.getAllNotifications().first()
+                notifications.forEach { item ->
+                    scheduleNotification(
+                        item.noticationId.toInt(),
+                        item.hour,
+                        item.minute
+                    )
                 }
             }
-        }
-        else{
-            cancelAllNotifications()
+            else{
+                cancelAllNotifications()
+            }
         }
     }
 
-    fun TestNotify(){
-        scheduleNotification(
-            5,
-            "asd",
-            "asdasd",
-            14,
-                35
-        )
+    fun cancelNotification(notificationId: Long, context: Context) {
+        WorkManager.getInstance(context)
+            .cancelAllWorkByTag("notification_$notificationId")
+
+        // Удаляем уже показанное уведомление
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(notificationId.toInt())
     }
 
     fun cancelAllNotifications() {

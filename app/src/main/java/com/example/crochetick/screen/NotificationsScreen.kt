@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -280,6 +281,7 @@ fun NotificationList(notificationArray:List<NotificationDBTable>, viewModel: Set
 
 @Composable
 fun NotificationCard(item:NotificationDBTable,viewModel: SettingsViewModel){
+    val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth()
     ){
@@ -303,6 +305,7 @@ fun NotificationCard(item:NotificationDBTable,viewModel: SettingsViewModel){
                             item.minute
                         )
                     )
+                    viewModel.cancelNotification(item.noticationId, context)
                 },
                 modifier = Modifier.size(48.dp),
             ) {
