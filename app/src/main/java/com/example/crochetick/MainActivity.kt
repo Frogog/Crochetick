@@ -43,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.activitiy.ProjectWorkActivity
 import com.example.crochetick.MainActivity.Companion.navDataArrays
 import com.example.crochetick.dataClass.CategoryData
+import com.example.crochetick.dataClass.LineData
 import com.example.crochetick.dataStore.SettingsDataStore
 import com.example.crochetick.screen.HomeScreen
 import com.example.crochetick.screen.LineScreen
@@ -97,6 +98,10 @@ class MainActivity : ComponentActivity() {
             CategoryData(0,"Название категории"),
             CategoryData(1,"Одежда"),
             CategoryData(2,"Игрушки"),
+        )
+        val lineArray:List<LineData> = listOf(
+            LineData(0,"Артур",2,10,"10.09.2024","IMG_1733891051288","Сделал это","Оно реально сделано"),
+            LineData(1,"Влад",3,5,"11.09.2024",null,"Сделал это","Оно реально сделано")
         )
     }
 
