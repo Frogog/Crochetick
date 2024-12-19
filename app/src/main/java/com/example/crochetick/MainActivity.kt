@@ -8,10 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
@@ -36,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -47,15 +42,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.activitiy.ProjectWorkActivity
 import com.example.crochetick.MainActivity.Companion.navDataArrays
+import com.example.crochetick.dataClass.CategoryData
 import com.example.crochetick.dataStore.SettingsDataStore
 import com.example.crochetick.screen.HomeScreen
 import com.example.crochetick.screen.LineScreen
 import com.example.crochetick.screen.NotificationsScreen
-import com.example.crochetick.screen.SearchScreen
+import com.example.crochetick.screen.CategoryScreen
 import com.example.crochetick.screen.SettingsScreen
+import com.example.crochetick.screen.ShowCategory
+import com.example.crochetick.screen.ShowScheme
 import com.example.crochetick.ui.theme.LowerNavig
 import com.example.crochetick.ui.theme.NavSelect
-import com.example.crochetick.ui.theme.Background
+import com.example.crochetick.viewModel.SchemesViewModel
 import com.example.crochetick.viewModel.SettingsViewModel
 import com.example.crochetick.viewModel.SettingsViewModelFactory
 
@@ -65,6 +63,7 @@ class MainActivity : ComponentActivity() {
     private val SettingsViewModel: SettingsViewModel by viewModels {
         SettingsViewModelFactory(settingsDataStore)
     }
+    private val SchemesViewModel:SchemesViewModel by viewModels()
     companion object {
         val projectDataArrays:List<ProjectData> = listOf(
             ProjectData(0,"Первый","Описание первого проекта",true,"01.12.2024","02.12.2024",),
@@ -90,9 +89,14 @@ class MainActivity : ComponentActivity() {
         )
         val navDataArrays = listOf(
             ScreenData.Projects,
-            ScreenData.Schemes,
+            ScreenData.Categories,
             ScreenData.Line,
             ScreenData.Settings
+        )
+        val categoryArrays:List<CategoryData> = listOf(
+            CategoryData(0,"Название категории"),
+            CategoryData(1,"Одежда"),
+            CategoryData(2,"Игрушки"),
         )
     }
 
@@ -101,18 +105,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
             val navController = rememberNavController()
             var currentScreen by remember { mutableStateOf("Проекты") }
-            //val settingsViewModel:SettingsViewModel = viewModel()
             CrochetickTheme {
                 Scaffold (
-                    topBar = {
-                        when (currentScreen) {
-                            "Проекты", "Схемы", "Лента", "Настройки" -> SimpleTopBar(currentScreen)
-                            else -> null
-                        }
-                    },
                     bottomBar = { ProjectBottomBar(navController) },
                     floatingActionButton = {
                         if (currentScreen=="Проекты"){
@@ -139,8 +135,8 @@ class MainActivity : ComponentActivity() {
                         composable(route = "projects"){
                             HomeScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                         }
-                        composable(route = "schemes"){
-                            SearchScreen(navController,innerPadding,currentScreen = { currentScreen = it })
+                        composable(route = "category"){
+                            CategoryScreen(navController,innerPadding, currentScreen = { currentScreen = it }, SchemesViewModel)
                         }
                         composable(route = "line"){
                             LineScreen(navController,innerPadding, currentScreen = { currentScreen = it })
@@ -177,36 +173,18 @@ class MainActivity : ComponentActivity() {
                         ){
                             NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it },SettingsViewModel)
                         }
+                        composable(route="showCategory") {
+                            ShowCategory(navController, innerPadding, currentScreen = { currentScreen = it }, SchemesViewModel)
+                        }
+                        composable(route="showScheme") {
+                            ShowScheme(navController, innerPadding, currentScreen = { currentScreen = it }, SchemesViewModel)
+                        }
                     }
                 }
             }
         }
     }
 }
-
-@Composable
-fun CustomProjectTopBar(topBarCreator: @Composable () -> Unit){
-    topBarCreator()
-}
-
-@Composable
-fun SimpleTopBar(title: String){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Background)
-            .padding(top = 42.dp,bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleLarge
-        )
-    }
-}
-
-
 
 @Composable
 fun ProjectBottomBar(navController: NavController){
@@ -248,12 +226,10 @@ fun ProjectBottomBar(navController: NavController){
 @Composable
 fun MainPreview() {
     val navController = rememberNavController()
-    //val backStackEntry = navController.currentBackStackEntryAsState()  Нужен может быть для (выбор между реализацией в bottomNav или во внешней) selected = backStackEntry.value?.destination?.route == screen.route,
     var currentScreen by remember { mutableStateOf("Проекты") }
     val settingsViewModel:SettingsViewModel = viewModel()
     CrochetickTheme {
         Scaffold (
-            topBar = { CustomProjectTopBar{ SimpleTopBar(currentScreen) } },
             bottomBar = { ProjectBottomBar(navController) },
             floatingActionButton = {
                 if (currentScreen=="Проекты"){
@@ -279,7 +255,7 @@ fun MainPreview() {
                     HomeScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                 }
                 composable(route = "search"){
-                    SearchScreen(navController,innerPadding, currentScreen = { currentScreen = it })
+                    CategoryScreen(navController, innerPadding,currentScreen = { currentScreen = it })
                 }
                 composable(route = "line"){
                     LineScreen(navController,innerPadding, currentScreen = { currentScreen = it })

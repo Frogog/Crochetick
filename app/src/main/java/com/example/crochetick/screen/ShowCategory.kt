@@ -2,8 +2,6 @@ package com.example.crochetick.screen
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,138 +13,88 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.crochetick.activitiy.ProjectDoActivity
-import com.example.crochetick.dataClass.ProjectData
-import com.example.crochetick.MainActivity.Companion.projectDataArrays
-import com.example.crochetick.MainActivity.Companion.tabDataArrays
 import com.example.crochetick.R
 import com.example.crochetick.TrashCan.Usual
+import com.example.crochetick.activitiy.ProjectDoActivity
 import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme
+import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.ui.theme.TextSecond
-import com.example.crochetick.viewModel.HomeViewModel
+import com.example.crochetick.viewModel.SchemesViewModel
 import java.io.File
 
 @Composable
-fun HomeScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit){
-    currentScreen("Проекты")
+fun ShowCategory(navController: NavController, innerPadding: PaddingValues , currentScreen: (String) -> Unit, viewModel: SchemesViewModel){
     CrochetickTheme {
-        val viewModel = HomeViewModel()
-        Column(modifier = Modifier.padding(innerPadding)){
-            HomeTopBar("Проекты")
-            ProjectTabRow(viewModel)
+        val projects = viewModel.projects.collectAsState()
+        Column(
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+        ) {
+            ShowCategoryTopBar(
+                "Игрушки",
+            ) { navController.popBackStack() }
+            ShowCategoryList(projects.value,navController)
         }
     }
 }
 
 @Composable
-fun HomeTopBar(title: String){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Background)
-            .padding(top=12.dp,bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleLarge
-        )
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProjectTabRow(viewModel: HomeViewModel = viewModel()){
-    var selectedTabIndex by remember {
-        mutableIntStateOf(0)
-    }
-    val projects by viewModel.projects.collectAsState()
-
-    PrimaryTabRow(
-        selectedTabIndex = selectedTabIndex,
-        containerColor =MaterialTheme.colorScheme.background,
-        modifier = Modifier.shadow(
-            elevation = 5.dp,
-            shape = RectangleShape,
-            clip = false,
-            ambientColor = Color.Black.copy(alpha = 0.2f),
-            spotColor = Color.Black.copy(alpha = 0.2f)
-        )
-    ) {
-        tabDataArrays.forEachIndexed{ index, item ->
-            Tab(
-                selected = index == selectedTabIndex,
-                onClick = {
-                    selectedTabIndex = index
-                },
-                text = {
-                    Text(text = item.title)
-                },
-
-                )
+fun ShowCategoryList(projectDataArray:List<ProjectDBTable>,navController: NavController){
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        itemsIndexed(projectDataArray){index, item ->
+            if (index==0) Spacer(modifier = Modifier.height(8.dp))
+            ShowCategoryCard(
+                item = item,
+                navController
+            )
+            if (index== projectDataArray.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
         }
     }
-
-    when(selectedTabIndex){
-        //0-> ProjectList(projectDataArrays.filter { !it.ended })
-        //1-> ProjectList(projectDataArrays.filter { it.ended })
-        0-> ProjectList(projects.filter { !it.done })
-        1-> ProjectList(projects.filter { it.done })
-    }
 }
 
 @Composable
-fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
+fun ShowCategoryCard(item: ProjectDBTable, navController: NavController){
     CrochetickTheme {
-        val intent = Intent(LocalContext.current,ProjectDoActivity::class.java).apply {
+        val intent = Intent(LocalContext.current, ProjectDoActivity::class.java).apply {
             putExtra("projectId",item.projectId)
             putExtra("projectTitle",item.title)
         }
-        val context:Context = LocalContext.current
+        val context: Context = LocalContext.current
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp).then(modifier),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
             elevation = CardDefaults.elevatedCardElevation(3.dp),
             onClick = {
-                context.startActivity(intent)
+                navController.navigate("showScheme")
             }
         )
         {
@@ -196,29 +144,42 @@ fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ProjectList(projectDataArray:List<ProjectDBTable>){
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(projectDataArray){index, item ->
-            if (index==0) Spacer(modifier = Modifier.height(8.dp))
-            ProjectCard(
-                item = item,
+fun ShowCategoryTopBar(
+    title:String,
+    onBackClick: () -> Unit,
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer(
+                shadowElevation = 5f,
+                shape = RectangleShape,
+                clip = false
             )
-            if (index== projectDataArray.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-    CrochetickTheme {
-        Scaffold (
-            topBar = {HomeTopBar("Проекты")},
-            //bottomBar = { ProjectBottomBar()}
-        ){innerPadding->
-            Column(modifier = Modifier.padding(innerPadding)){
-                ProjectTabRow()
+            .background(Background)
+            .padding(top = 36.dp, bottom = 16.dp, start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(end = 10.dp)
+        ) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier.size(16.dp),
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.back_icon),
+                    contentDescription = "Localized description",
+                    modifier = Modifier.fillMaxSize()
+                )
             }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge
+            )
         }
     }
 }

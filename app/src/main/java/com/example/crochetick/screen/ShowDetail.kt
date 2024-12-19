@@ -83,6 +83,8 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth().padding(innerPaddingValues)
     ) {
+        var dp = 240.dp
+        if (uiState.value.currentDetail?.schemaText =="") dp = 449.dp
         if (uiState.value.currentDetail?.schemaImage !=null){
             val imageFile = File(LocalContext.current.filesDir, "DetailImages/${uiState.value.currentDetail?.schemaImage}.jpg")
             AsyncImage(
@@ -91,12 +93,12 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
                     .data(imageFile)
                     .build(),
                 contentDescription = "Изображение",
-                modifier = Modifier.size(200.dp),
-                contentScale = ContentScale.Crop
+                modifier = Modifier.fillMaxWidth().height(dp),
+                contentScale = ContentScale.FillHeight
             )
         }
 
-        if (uiState.value.currentDetail?.schemaText !=null) ScrollableText(uiState.value.currentDetail?.schemaText!!)
+        if (uiState.value.currentDetail?.schemaText !="") ScrollableText(uiState.value.currentDetail?.schemaText!!)
         RowIndicator(viewModel,uiState)
     }
 }

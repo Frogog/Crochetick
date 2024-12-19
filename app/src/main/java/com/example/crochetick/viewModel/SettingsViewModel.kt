@@ -7,7 +7,9 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.crochetick.dataClass.model.NotificationDBTable
@@ -65,10 +67,6 @@ class SettingsViewModel(
         }
     }
 
-    fun updateSwitchMode(){
-        _uiStateNotification.value = _uiStateNotification.value.copy(switchMode = !_uiStateNotification.value.switchMode)
-    }
-
     fun setSwitchState(checked: Boolean) {
         viewModelScope.launch {
             settingsDataStore.saveSwitchState(checked)
@@ -97,7 +95,7 @@ class SettingsViewModel(
         )
 
         // Создаем запрос на выполнение
-        val notificationWork = OneTimeWorkRequestBuilder<NotificationWorker>()
+        val notificationWork = PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
             .setInputData(data)
             .setInitialDelay(
                 calendar.timeInMillis - System.currentTimeMillis(),
@@ -107,7 +105,11 @@ class SettingsViewModel(
             .build()
 
         // Запускаем Worker
-        workManager.enqueue(notificationWork)
+        workManager.enqueueUniquePeriodicWork(
+            "notification_$notificationId",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            notificationWork
+        )
     }
 
     fun toggleNotifications(enable:Boolean){
