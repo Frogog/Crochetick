@@ -1,13 +1,18 @@
 package com.example.crochetick.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,10 +34,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +50,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -77,25 +87,57 @@ fun ShowDetail(navController: NavController, viewModel: ProjectDoViewModel){
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDoViewModel,uiState: State<ProjectDoState>){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth().padding(innerPaddingValues)
     ) {
+        var scale by remember {
+            mutableStateOf(1f)
+        }
+        var offset by remember {
+            mutableStateOf(Offset.Zero)
+        }
+
         var dp = 240.dp
         if (uiState.value.currentDetail?.schemaText =="") dp = 449.dp
         if (uiState.value.currentDetail?.schemaImage !=null){
             val imageFile = File(LocalContext.current.filesDir, "DetailImages/${uiState.value.currentDetail?.schemaImage}.jpg")
-            AsyncImage(
-                model = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(imageFile)
-                    .build(),
-                contentDescription = "Изображение",
-                modifier = Modifier.fillMaxWidth().height(dp),
-                contentScale = ContentScale.FillHeight
-            )
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1280f/959f)
+            ) {
+                val state = rememberTransformableState{zoomChange,panChange,rotationChange->
+                    scale = (scale*zoomChange).coerceIn(1f,5f)
+
+                    val extraWidth = (scale-1) * constraints.maxWidth
+                    val extraHeight = (scale-1) * constraints.maxHeight
+
+                    val maxX = extraWidth/2
+                    val maxY = extraHeight/2
+
+                    offset=Offset(
+                        x = (offset.x+panChange.x).coerceIn(-maxX, maxX),
+                        y = (offset.y+panChange.y).coerceIn(-maxY, maxY)
+                    )
+                }
+                AsyncImage(
+                    model = ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(imageFile)
+                        .build(),
+                    contentDescription = "Изображение",
+                    modifier = Modifier.fillMaxWidth().height(dp).graphicsLayer{
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = offset.x
+                        translationY = offset.y
+                    }
+                    .transformable(state),
+                    contentScale = ContentScale.FillHeight
+                )
+            }
         }
 
         if (uiState.value.currentDetail?.schemaText !=""){
