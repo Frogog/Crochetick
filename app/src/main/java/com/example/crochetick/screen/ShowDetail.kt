@@ -98,7 +98,12 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
             )
         }
 
-        if (uiState.value.currentDetail?.schemaText !="") ScrollableText(uiState.value.currentDetail?.schemaText!!)
+        if (uiState.value.currentDetail?.schemaText !=""){
+            ScrollableText(
+                uiState.value.currentDetail?.schemaText!!,
+                paddingValues = PaddingValues(vertical = 10.dp, horizontal = 16.dp)
+            )
+        }
         RowIndicator(viewModel,uiState)
     }
 }
@@ -128,7 +133,8 @@ fun testDetail(){
                         "juju j njn n nm nm mn "+
                         "adsadadadadasdasd"+
                         "aldkalkdmadlkmadandjkadkjahduadhadiadadboadbadbadaodasn"+
-                        "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj"
+                        "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj",
+                    paddingValues = PaddingValues(vertical = 10.dp, horizontal = 16.dp)
                 )
                 //RowIndicator()
             }
@@ -140,13 +146,14 @@ fun testDetail(){
 fun ScrollableText(
     text: String,
     modifier: Modifier = Modifier,
-    height: Dp = 225.dp
+    height: Dp = 225.dp,
+    paddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
     Box(
         modifier = modifier
             .height(height)
             .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 16.dp)
+            .padding(paddingValues)
     ) {
         val scrollState = rememberScrollState()
 
