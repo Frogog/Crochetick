@@ -3,8 +3,6 @@ package com.example.crochetick.screen
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -13,30 +11,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,10 +35,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -59,7 +47,6 @@ import com.example.crochetick.dataClass.model.DetailDBTable
 import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.dataClass.requestData.SchemesResponse
 import com.example.crochetick.ui.theme.Background
-import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.viewModel.SchemesViewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -93,10 +80,14 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
             if (scheme.image==null) textDp = 661.dp
             val context = LocalContext.current
             val activity = context as ComponentActivity
-            val intent = remember {
-                Intent(context, ProjectDoActivity::class.java).apply {
-                    putExtra("projectId", scheme.id.toLong())
-                    putExtra("projectTitle", scheme.name)
+            LaunchedEffect(viewModel) {
+                viewModel.navigationEvent.collect { (projectId, projectTitle) ->
+                    val intent = Intent(context, ProjectDoActivity::class.java).apply {
+                        putExtra("projectId", projectId)
+                        putExtra("projectTitle", projectTitle)
+                    }
+                    activity.finish()
+                    context.startActivity(intent)
                 }
             }
             if (scheme.image!=null){
@@ -131,7 +122,7 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
                     val details = mutableListOf<DetailDBTable>()
                     scheme.details.forEach{item->
                         var imageNameDetail:String?= null
-                        var textDetail:String = ""
+                        var textDetail = ""
                         if (item.schema_image!=null){
                             imageNameDetail = Usual.getBitmapFromBase64(item.schema_image)
                                 ?.let { saveImageFromBitmap(it, context,"DetailImages") }
@@ -148,9 +139,7 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
                             schemaText = textDetail
                         )
                     }
-                    viewModel.importSchemeToProject(projectDBTable,details)
-                    activity.finish()
-                    context.startActivity(intent)
+                    viewModel.importSchemeToProject(projectDBTable, details)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,28 +154,23 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
 }
 
 fun saveImageFromBitmap(bitmap: Bitmap, context: Context, folderName: String): String {
-    // Создаем директорию, если её нет
     val dir = File(context.filesDir, folderName).apply {
         if (!exists()) mkdirs()
     }
 
-    // Генерируем уникальное имя файла
     val timestamp = System.currentTimeMillis()
     val imageName = "IMG_$timestamp" // Добавляем расширение
 
-    // Создаем файл
     val imageFile = File(dir, "$imageName.jpg")
 
     try {
-        // Открываем поток для записи
         FileOutputStream(imageFile).use { output ->
-            // Сжимаем и сохраняем
             if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)) {
                 throw IOException("Ошибка при сжатии изображения")
             }
         }
 
-        return imageName // Возвращаем имя файла
+        return imageName
 
     } catch (e: Exception) {
         Log.e("SaveImage", "Ошибка при сохранении изображения", e)
@@ -208,7 +192,7 @@ fun ShowSchemeTopBar(
                 clip = false
             )
             .background(Background)
-            .padding(top = 36.dp, bottom = 16.dp, start = 16.dp),
+            .padding(top = 46.dp, bottom = 16.dp, start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

@@ -103,7 +103,7 @@ fun DetailCard(item:DetailDBTable,onClick:(detailId:Long)->Unit){
     Card( modifier = Modifier
         .fillMaxWidth(),
         onClick = {
-
+            onClick(item.detailId)
         }
     ){
         var colorBackground:Modifier = Modifier.background(ReadyGreen)
@@ -130,7 +130,7 @@ fun DetailCard(item:DetailDBTable,onClick:(detailId:Long)->Unit){
                     Text(item.doneDetails.toString()+"/"+item.countDetails.toString(), style = MaterialTheme.typography.bodySmall)
                 }
                 IconButton(
-                    onClick = { onClick(item.detailId) },
+                    onClick = {},
                     modifier = Modifier.size(24.dp),
                 ) {
                     Icon(

@@ -92,7 +92,7 @@ fun CategoryCard(item: CategoriesResponse, viewModel: SchemesViewModel, navContr
             )
             IconButton(
                 onClick = {
-                    viewModel.updateCategoryId(item.id)
+                    viewModel.updateCategory(item.id,item.name)
                     viewModel.updateSchemesByCategory()
                     navController.navigate("showCategory")
                 },

@@ -20,6 +20,11 @@ class ProjectDoViewModel:ViewModel() {
     private val _uiStateProjectDo = MutableStateFlow(ProjectDoState())
     val uiStateProjectDo : StateFlow<ProjectDoState> = _uiStateProjectDo.asStateFlow()
 
+    fun getLastProject(){
+        viewModelScope.launch {
+        }
+    }
+
     fun getAllDetailsByProject(){
         viewModelScope.launch {
             CrochetickRepository.instance.getAllDetailsByProject(_uiStateProjectDo.value.projectId)

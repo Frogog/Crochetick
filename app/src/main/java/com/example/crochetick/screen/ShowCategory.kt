@@ -57,13 +57,12 @@ import java.io.File
 @Composable
 fun ShowCategory(navController: NavController, innerPadding: PaddingValues , currentScreen: (String) -> Unit, viewModel: SchemesViewModel){
     CrochetickTheme {
-        val projects = viewModel.projects.collectAsState()
         val uiState = viewModel.uiState.collectAsState()
         Column(
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             ShowCategoryTopBar(
-                "Игрушки",
+                uiState.value.categoryTitle,
             ) { navController.popBackStack() }
             ShowCategoryList(uiState.value.schemes,navController,viewModel)
         }
@@ -151,7 +150,7 @@ fun ShowCategoryTopBar(
                 clip = false
             )
             .background(Background)
-            .padding(top = 36.dp, bottom = 16.dp, start = 16.dp),
+            .padding(top = 46.dp, bottom = 16.dp, start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

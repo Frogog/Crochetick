@@ -19,6 +19,8 @@ class CrochetickRepository {
 
     fun getAllNotifications():Flow<List<NotificationDBTable>> = crochetickDao.getAllNotifications()
 
+    suspend fun getLastProject():ProjectDBTable = crochetickDao.getLastProject()
+
     suspend fun insertProjectWithDetails(project:ProjectDBTable, details:List<DetailDBTable>) = crochetickDao.InsertProjectWithDetails(project,details)
 
     suspend fun insertNotification(notification: NotificationDBTable) = crochetickDao.insertNotification(notification)

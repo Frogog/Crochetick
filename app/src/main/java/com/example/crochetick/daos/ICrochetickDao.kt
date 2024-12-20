@@ -26,6 +26,9 @@ interface ICrochetickDao {
     @Query("SELECT * FROM projectDBTable")
     fun getAllProjects(): Flow<List<ProjectDBTable>>
 
+    @Query("SELECT * FROM projectDBTable ORDER BY projectId DESC LIMIT 1")
+    suspend fun getLastProject():ProjectDBTable
+
     @Query("SELECT * FROM detailDBTable WHERE projectIdFK = :projectId")
     fun getAllDetailsByProject(projectId:Long):Flow<List<DetailDBTable>>
 
