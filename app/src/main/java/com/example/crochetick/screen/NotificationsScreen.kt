@@ -67,24 +67,21 @@ import kotlin.time.TimeSource
 
 @Composable
 fun NotificationsScreen(navController: NavController,innerPadding:PaddingValues,currentScreen: (String) -> Unit, viewModel: SettingsViewModel){
-    currentScreen("Уведомления")
+    currentScreen("Лента")
     CrochetickTheme {
-        Scaffold(
-            topBar = { NotificationTopBar({navController.popBackStack()},{viewModel.updateShowDialog(true)}) },
-        ) {innerPadding->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val uiState = viewModel.uiStateNotification.collectAsState()
-                NotificationSwitch(viewModel)
-                Spacer(Modifier.height(8.dp))
-                //Text(uiState.value.selectedTime.get(Calendar.HOUR_OF_DAY).toString())
-                NotificationList(uiState.value.notificationList,viewModel)
-                InputExample(viewModel,uiState)
-            }
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            NotificationTopBar({navController.popBackStack()},{viewModel.updateShowDialog(true)})
+            val uiState = viewModel.uiStateNotification.collectAsState()
+            NotificationSwitch(viewModel)
+            Spacer(Modifier.height(8.dp))
+            //Text(uiState.value.selectedTime.get(Calendar.HOUR_OF_DAY).toString())
+            NotificationList(uiState.value.notificationList,viewModel)
+            InputExample(viewModel,uiState)
         }
     }
 }
@@ -293,7 +290,7 @@ fun NotificationCard(item:NotificationDBTable,viewModel: SettingsViewModel){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                item.hour.toString().padStart(2,'0')+":"+item.minute.toString().padStart(1,'0'),
+                item.hour.toString().padStart(2,'0')+":"+item.minute.toString().padStart(2,'0'),
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(

@@ -141,7 +141,7 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
                         translationY = offset.y
                     }
                     .transformable(state).height(imageDp),
-                    contentScale = ContentScale.FillHeight
+                    contentScale = ContentScale.Fit
                 )
             }
         }

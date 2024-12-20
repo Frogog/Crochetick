@@ -164,18 +164,18 @@ fun MainContent(innerPadding: PaddingValues,goToDetail:()->Unit,viewModel: Proje
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 10.dp, bottom = 8.dp))
                 ImagePickerButton(viewModel)
-                val context = LocalContext.current
-                Button(
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            viewModel.uiStateProject.value.details.size.toString(),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                ) {
-                    Text("Проверка массва")
-                }
+//                val context = LocalContext.current
+//                Button(
+//                    onClick = {
+//                        Toast.makeText(
+//                            context,
+//                            viewModel.uiStateProject.value.details.size.toString(),
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                ) {
+//                    Text("Проверка массва")
+//                }
             }
             Row(
                 modifier = Modifier

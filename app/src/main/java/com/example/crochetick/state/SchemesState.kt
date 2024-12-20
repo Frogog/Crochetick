@@ -7,6 +7,7 @@ data class SchemesState(
     val categoryId:Int = 0,
     val categoryTitle:String="",
     val schemeId:Int=0,
+    val schemeTitle:String="",
     val createdId:Long=-1,
     val createdTitle:String="Деталь",
     val categories:List<CategoriesResponse> = listOf(),

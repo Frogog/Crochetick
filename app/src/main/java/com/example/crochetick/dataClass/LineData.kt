@@ -6,7 +6,7 @@ data class LineData(
     val hour:Int=0,
     val minute:Int=0,
     val date:String,
-    val image:String?,
+    val image:Int?,
     val title:String,
-    val text:String
+    val text:String?
 )

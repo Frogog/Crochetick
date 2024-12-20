@@ -1,5 +1,6 @@
 package com.example.crochetick.screen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -25,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -53,13 +57,14 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.time.LocalDate
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun ShowScheme(navController: NavController, innerPadding: PaddingValues, currentScreen: (String) -> Unit, viewModel: SchemesViewModel){
     Column(
         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
     ) {
         ShowSchemeTopBar(
-            "Игрушка одна",
+            viewModel.uiState.value.schemeTitle,
         ) { navController.popBackStack() }
         ShowSchemeContent(navController,viewModel=viewModel)
     }
@@ -73,11 +78,12 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
         val uiState = viewModel.uiState.collectAsState()
         val schemes = uiState.value.schemes
         val scheme:SchemesResponse? = schemes.firstOrNull{ it.id == uiState.value.schemeId }
+        val bitmap by remember { mutableStateOf(scheme?.image?.let { Usual.getBitmapFromBase64(it) }) }
         if(scheme!=null){
             var imageDp = 331.dp
-            var textDp = 330.dp
-            if (scheme.description =="") imageDp = 661.dp
-            if (scheme.image==null) textDp = 661.dp
+            var textDp = 219.dp
+            if (scheme.description =="") imageDp = 550.dp
+            if (scheme.image==null) textDp = 550.dp
             val context = LocalContext.current
             val activity = context as ComponentActivity
             LaunchedEffect(viewModel) {
@@ -94,17 +100,25 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
                 AsyncImage(
                     model = ImageRequest
                         .Builder(context)
-                        .data(Usual.getBitmapFromBase64(scheme.image))
+                        .data(bitmap)
                         .build(),
                     contentDescription = "Изображение",
                     modifier = Modifier.fillMaxWidth().height(imageDp).padding(top = 8.dp),
                     contentScale = ContentScale.FillHeight,
                 )
             }
-            ScrollableText(scheme.description.toString(),
-                paddingValues = PaddingValues(top = 10.dp, start = 16.dp, end = 16.dp),
-                modifier = Modifier.height(textDp)
-            )
+            if (scheme.description!=null){
+                ScrollableText(scheme.description.toString(),
+                    paddingValues = PaddingValues(top = 10.dp, start = 16.dp, end = 16.dp),
+                    modifier = Modifier.height(textDp)
+                )
+            }
+            else{
+                ScrollableText("",
+                    paddingValues = PaddingValues(top = 10.dp, start = 16.dp, end = 16.dp),
+                    modifier = Modifier.height(textDp)
+                )
+            }
             FilledTonalButton(
                 onClick = {
                     var imageNameProject:String?= null

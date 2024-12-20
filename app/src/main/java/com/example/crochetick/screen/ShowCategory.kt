@@ -27,6 +27,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -87,13 +89,14 @@ fun ShowCategoryList(schemesDataArray:List<SchemesResponse>,navController: NavCo
 @Composable
 fun ShowCategoryCard(item: SchemesResponse, navController: NavController,viewModel: SchemesViewModel){
     CrochetickTheme {
+        val bitmap by remember { mutableStateOf(item.image?.let { Usual.getBitmapFromBase64(it) }) }
         val context: Context = LocalContext.current
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
             elevation = CardDefaults.elevatedCardElevation(3.dp),
             onClick = {
-                viewModel.updateSchemeId(item.id)
+                viewModel.updateScheme(item.id, item.name)
                 navController.navigate("showScheme")
             }
         )
@@ -105,7 +108,7 @@ fun ShowCategoryCard(item: SchemesResponse, navController: NavController,viewMod
                             AsyncImage(
                                 model = ImageRequest
                                     .Builder(context)
-                                    .data(Usual.getBitmapFromBase64(item.image))
+                                    .data(bitmap)
                                     .build(),
                                 contentDescription = "Изображение",
                                 modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),

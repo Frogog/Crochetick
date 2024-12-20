@@ -328,7 +328,7 @@ fun DetailTopBar(
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                "Добавить новый проект",
+                "Добавить новую деталь",
                 style = MaterialTheme.typography.titleLarge
             )
         }

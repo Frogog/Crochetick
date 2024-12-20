@@ -114,22 +114,20 @@ fun ProjectTabRow(viewModel: HomeViewModel = viewModel()){
                 text = {
                     Text(text = item.title)
                 },
-
                 )
         }
-        Button(
-            onClick = {
-                Usual.Notification(viewModel.scheme.value.size.toString(), context)
-                Usual.encodeImageToBase64AndSaveToFile(context)
-            }
-        ) {
-            Text("asdasdadads")
-        }
+//        Button(
+//            onClick = {
+//                Usual.encodeImageToBase64AndSaveToFile(context)
+//            }
+//        ) {
+//            Text("asdasdadads")
+//        }
     }
 
     when(selectedTabIndex){
         0-> ProjectList(projects.filter { !it.done })
-        1-> ProjectList(projects.filter { it.done })
+        1-> ProjectList(projects.filter { it.done }.sortedByDescending { it.dateEnd })
     }
 }
 
@@ -174,11 +172,21 @@ fun ProjectCard(item: ProjectDBTable, modifier: Modifier = Modifier) {
                             text = item.title,
                             style = MaterialTheme.typography.titleSmall
                         )
-                        Text(
-                            text = Usual.EnToRu(item.dateStart),
-                            color = TextSecond,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                        if (item.dateEnd!=null){
+                            Text(
+                                text = Usual.EnToRu(item.dateStart)+" — "+Usual.EnToRu(item.dateEnd),
+                                color = TextSecond,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        else{
+                            Text(
+                                text = Usual.EnToRu(item.dateStart),
+                                color = TextSecond,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+
                     }
                     Row(modifier = Modifier.fillMaxWidth()){
                         item.description?.let {

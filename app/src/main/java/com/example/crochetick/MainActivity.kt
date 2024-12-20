@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
@@ -82,7 +84,6 @@ class MainActivity : ComponentActivity() {
                 false,"04.12.2024","05.12.2024", true),
             ProjectData(3,"Корова","Розово-белая игрушка коровы станет отличным подарком для детей постарше - используются глаза, которые малыши могут оторвать и проглотить спровоцировав удушье. ",
                 false,"04.12.2024","05.12.2024", true),
-
         )
         val tabDataArrays:List<TabData> = listOf(
             TabData(0,"Начатые"),
@@ -100,8 +101,8 @@ class MainActivity : ComponentActivity() {
             CategoryData(2,"Игрушки"),
         )
         val lineArray:List<LineData> = listOf(
-            LineData(0,"Артур",2,10,"10.09.2024","IMG_1733891051288","Сделал это","Оно реально сделано"),
-            LineData(1,"Влад",3,5,"11.09.2024",null,"Сделал это","Оно реально сделано")
+            LineData(0,"Артур",2,10,"10.09.2024",R.drawable.lane_image,"К праздникам готовы!","Смогла успеть приготовить всем подарки."),
+            LineData(1,"Влад",3,5,"11.09.2024",null,"Начинаю открывать мир вязания!",null)
         )
     }
 
@@ -136,7 +137,22 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ){innerPadding->
-                    NavHost(navController = navController, startDestination = "projects"){
+                    NavHost(
+                        navController = navController,
+                        startDestination = "projects",
+                        enterTransition = {
+                            fadeIn(animationSpec = tween(0))
+                        },
+                        exitTransition = {
+                            fadeOut(animationSpec = tween(0))
+                        },
+                        popEnterTransition = {
+                            fadeIn(animationSpec = tween(0))
+                        },
+                        popExitTransition = {
+                            fadeOut(animationSpec = tween(0))
+                        }
+                    ){
                         composable(route = "projects"){
                             HomeScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                         }
@@ -149,33 +165,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = "settings"){
                             SettingsScreen(navController,innerPadding, currentScreen = { currentScreen = it })
                         }
-                        composable(
-                            route = "notifications",
-                            enterTransition = {
-                                slideIntoContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                    animationSpec = tween(150)
-                                )
-                            },
-                            exitTransition = {
-                                slideOutOfContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                    animationSpec = tween(150)
-                                )
-                            },
-                            popEnterTransition = {
-                                slideIntoContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                    animationSpec = tween(150)
-                                )
-                            },
-                            popExitTransition = {
-                                slideOutOfContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                    animationSpec = tween(150)
-                                )
-                            }
-                        ){
+                        composable(route = "notifications",){
                             NotificationsScreen(navController,innerPadding, currentScreen = { currentScreen = it },SettingsViewModel)
                         }
                         composable(route="showCategory") {
