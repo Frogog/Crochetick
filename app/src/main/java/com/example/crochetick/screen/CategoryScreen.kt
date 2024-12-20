@@ -18,6 +18,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -32,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crochetick.MainActivity
 import com.example.crochetick.R
 import com.example.crochetick.dataClass.CategoryData
+import com.example.crochetick.dataClass.requestData.CategoriesResponse
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextSecond
@@ -45,18 +48,19 @@ fun CategoryScreen(navController: NavController, innerPadding: PaddingValues, cu
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             CategoryTopBar("Схемы",innerPadding)
-            SchemesMainContent(MainActivity.categoryArrays,viewModel ,navController)
+            SchemesMainContent(viewModel ,navController)
         }
     }
 }
 
 @Composable
-fun SchemesMainContent(schemesList:List<CategoryData> = listOf(), viewModel: SchemesViewModel = viewModel(),navController: NavController = rememberNavController()){
-    CategoryList(schemesList,viewModel,navController)
+fun SchemesMainContent(viewModel: SchemesViewModel = viewModel(),navController: NavController = rememberNavController()){
+    val uiState = viewModel.uiState.collectAsState()
+    CategoryList(uiState.value.categories,viewModel,navController)
 }
 
 @Composable
-fun CategoryList(schemesList:List<CategoryData>, viewModel: SchemesViewModel= viewModel(), navController: NavController){
+fun CategoryList(schemesList:List<CategoriesResponse>, viewModel: SchemesViewModel= viewModel(), navController: NavController){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +74,7 @@ fun CategoryList(schemesList:List<CategoryData>, viewModel: SchemesViewModel= vi
 }
 
 @Composable
-fun CategoryCard(item: CategoryData, viewModel: SchemesViewModel, navController: NavController){
+fun CategoryCard(item: CategoriesResponse, viewModel: SchemesViewModel, navController: NavController){
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(3.dp),
@@ -83,11 +87,13 @@ fun CategoryCard(item: CategoryData, viewModel: SchemesViewModel, navController:
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                item.title,
+                item.name,
                 style = MaterialTheme.typography.titleSmall
             )
             IconButton(
                 onClick = {
+                    viewModel.updateCategoryId(item.id)
+                    viewModel.updateSchemesByCategory()
                     navController.navigate("showCategory")
                 },
                 modifier = Modifier.size(48.dp).padding(start = 8.dp),
@@ -129,8 +135,9 @@ fun CategoryTopBar(title: String,innerPadding: PaddingValues) {
 fun PreviewSchemes(){
     CrochetickTheme {
         Column {
+            val viewModel:SchemesViewModel = viewModel()
             CategoryTopBar("Схемы", innerPadding = PaddingValues(0.dp))
-            SchemesMainContent(MainActivity.categoryArrays)
+            SchemesMainContent(viewModel)
         }
     }
 }

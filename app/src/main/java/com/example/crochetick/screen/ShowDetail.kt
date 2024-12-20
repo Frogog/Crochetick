@@ -103,25 +103,52 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
             mutableStateOf(Offset.Zero)
         }
 
-        var dp = 240.dp
-        if (uiState.value.currentDetail?.schemaText =="") dp = 449.dp
+        var imageDp = 240.dp
+        var textDp = 225.dp
+        if (uiState.value.currentDetail?.schemaText =="") imageDp = 465.dp
+        if (uiState.value.currentDetail?.schemaImage ==null) textDp = 465.dp
         if (uiState.value.currentDetail?.schemaImage !=null){
             val imageFile = File(LocalContext.current.filesDir, "DetailImages/${uiState.value.currentDetail?.schemaImage}.jpg")
-            AsyncImage(
-                model = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(imageFile)
-                    .build(),
-                contentDescription = "Изображение",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Fit
-            )
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val state = rememberTransformableState{zoomChange,panChange,rotationChange->
+                    scale = (scale*zoomChange).coerceIn(1f,5f)
+
+                    val extraWidth = (scale-1) * constraints.maxWidth
+                    val extraHeight = (scale-1) * constraints.maxHeight
+
+                    val maxX = extraWidth/2
+                    val maxY = extraHeight/2
+
+                    offset=Offset(
+                        x = (offset.x+panChange.x).coerceIn(-maxX, maxX),
+                        y = (offset.y+panChange.y).coerceIn(-maxY, maxY)
+                    )
+                }
+                AsyncImage(
+                    model = ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(imageFile)
+                        .build(),
+                    contentDescription = "Изображение",
+                    modifier = Modifier.fillMaxWidth().graphicsLayer{
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = offset.x
+                        translationY = offset.y
+                    }
+                    .transformable(state).height(imageDp),
+                    contentScale = ContentScale.FillHeight
+                )
+            }
         }
 
         if (uiState.value.currentDetail?.schemaText !=""){
             ScrollableText(
                 uiState.value.currentDetail?.schemaText!!,
                 paddingValues = PaddingValues(vertical = 10.dp, horizontal = 16.dp),
+                modifier = Modifier.height(textDp)
             )
         }
         RowIndicator(viewModel,uiState)
@@ -166,7 +193,7 @@ fun testDetail(){
 fun ScrollableText(
     text: String,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(0.dp)
+    paddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
     Box(
         modifier = modifier
@@ -195,6 +222,7 @@ fun RowIndicator(viewModel: ProjectDoViewModel,uiState: State<ProjectDoState>){
     var openAlertDialog = remember { mutableStateOf(false) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding()
     ) {
         Text(
             "Количество деталей:",

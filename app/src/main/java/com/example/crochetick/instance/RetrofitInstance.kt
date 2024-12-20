@@ -18,7 +18,8 @@ object RetrofitInstance {
 
     val api: ApiInterface by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.0.2:8000")
+            //.baseUrl("http://192.168.0.2:8000")
+            .baseUrl("http://192.168.0.5:8000")
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

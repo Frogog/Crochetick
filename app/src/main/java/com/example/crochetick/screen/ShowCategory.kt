@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -45,6 +46,7 @@ import com.example.crochetick.R
 import com.example.crochetick.TrashCan.Usual
 import com.example.crochetick.activitiy.ProjectDoActivity
 import com.example.crochetick.dataClass.model.ProjectDBTable
+import com.example.crochetick.dataClass.requestData.SchemesResponse
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.CrochetickTheme
 import com.example.crochetick.ui.theme.TextBright
@@ -56,62 +58,59 @@ import java.io.File
 fun ShowCategory(navController: NavController, innerPadding: PaddingValues , currentScreen: (String) -> Unit, viewModel: SchemesViewModel){
     CrochetickTheme {
         val projects = viewModel.projects.collectAsState()
+        val uiState = viewModel.uiState.collectAsState()
         Column(
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             ShowCategoryTopBar(
                 "Игрушки",
             ) { navController.popBackStack() }
-            ShowCategoryList(projects.value,navController)
+            ShowCategoryList(uiState.value.schemes,navController,viewModel)
         }
     }
 }
 
 @Composable
-fun ShowCategoryList(projectDataArray:List<ProjectDBTable>,navController: NavController){
+fun ShowCategoryList(schemesDataArray:List<SchemesResponse>,navController: NavController,viewModel: SchemesViewModel){
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(projectDataArray){index, item ->
+        itemsIndexed(schemesDataArray){index, item ->
             if (index==0) Spacer(modifier = Modifier.height(8.dp))
             ShowCategoryCard(
                 item = item,
-                navController
+                navController,
+                viewModel
             )
-            if (index== projectDataArray.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
+            if (index== schemesDataArray.size-1) Spacer(modifier = Modifier.height(8.dp).shadow(8.dp))
         }
     }
 }
 
 @Composable
-fun ShowCategoryCard(item: ProjectDBTable, navController: NavController){
+fun ShowCategoryCard(item: SchemesResponse, navController: NavController,viewModel: SchemesViewModel){
     CrochetickTheme {
-        val intent = Intent(LocalContext.current, ProjectDoActivity::class.java).apply {
-            putExtra("projectId",item.projectId)
-            putExtra("projectTitle",item.title)
-        }
         val context: Context = LocalContext.current
         ElevatedCard(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
             elevation = CardDefaults.elevatedCardElevation(3.dp),
             onClick = {
+                viewModel.updateSchemeId(item.id)
                 navController.navigate("showScheme")
             }
         )
         {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)){
-                if (item.imageName!=""){
+                if (item.image!=""){
                     Column(modifier= Modifier.padding(end = 8.dp)) {
-                        if (item.imageName!=null){
-                            val imageFile = File(context.filesDir, "ProjectImages/${item.imageName}.jpg")
+                        if (item.image!=null){
                             AsyncImage(
                                 model = ImageRequest
                                     .Builder(context)
-                                    .data(imageFile)
+                                    .data(Usual.getBitmapFromBase64(item.image))
                                     .build(),
                                 contentDescription = "Изображение",
                                 modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
                                 contentScale = ContentScale.Crop,
-                                //error = painterResource(id = R.drawable.error_image)
                             )
                         }
                     }
@@ -119,13 +118,8 @@ fun ShowCategoryCard(item: ProjectDBTable, navController: NavController){
                 Column{
                     Row(modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),Arrangement.SpaceBetween){
                         Text(
-                            text = item.title,
+                            text = item.name,
                             style = MaterialTheme.typography.titleSmall
-                        )
-                        Text(
-                            text = Usual.EnToRu(item.dateStart),
-                            color = TextSecond,
-                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                     Row(modifier = Modifier.fillMaxWidth()){
