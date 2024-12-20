@@ -1,6 +1,7 @@
 package com.example.crochetick.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -84,6 +85,7 @@ fun ShowDetail(navController: NavController, viewModel: ProjectDoViewModel){
             }
         }
     ) {innerPadding->
+        Log.d("fg","Зашел")
         val uiState = viewModel.uiStateProjectDo.collectAsState()
         MainContentShowDetail(innerPadding,viewModel,uiState)
     }

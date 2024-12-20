@@ -1,8 +1,11 @@
 package com.example.crochetick.screen
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -52,11 +55,16 @@ import coil.request.ImageRequest
 import com.example.crochetick.R
 import com.example.crochetick.TrashCan.Usual
 import com.example.crochetick.activitiy.ProjectDoActivity
+import com.example.crochetick.dataClass.model.DetailDBTable
+import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.dataClass.requestData.SchemesResponse
 import com.example.crochetick.ui.theme.Background
 import com.example.crochetick.ui.theme.TextBright
 import com.example.crochetick.viewModel.SchemesViewModel
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.time.LocalDate
 
 @Composable
 fun ShowScheme(navController: NavController, innerPadding: PaddingValues, currentScreen: (String) -> Unit, viewModel: SchemesViewModel){
@@ -108,6 +116,39 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
             )
             FilledTonalButton(
                 onClick = {
+                    var imageNameProject:String?= null
+                    if (scheme.image!=null){
+                        imageNameProject = Usual.getBitmapFromBase64(scheme.image)
+                            ?.let { saveImageFromBitmap(it, context,"ProjectImages") }
+                    }
+                    val projectDBTable = ProjectDBTable(
+                        title = scheme.name,
+                        description = scheme.description,
+                        dateStart = LocalDate.now().toString(),
+                        dateEnd = null,
+                        imageName =imageNameProject
+                    )
+                    val details = mutableListOf<DetailDBTable>()
+                    scheme.details.forEach{item->
+                        var imageNameDetail:String?= null
+                        var textDetail:String = ""
+                        if (item.schema_image!=null){
+                            imageNameDetail = Usual.getBitmapFromBase64(item.schema_image)
+                                ?.let { saveImageFromBitmap(it, context,"DetailImages") }
+                        }
+                        if (item.schema_text!=null) textDetail = item.schema_text.toString()
+                        details += DetailDBTable(
+                            projectIdFK = 0,
+                            titleDetail = item.name,
+                            countDetails = item.details_number,
+                            countRow = item.rows_number,
+                            doneDetails = 0,
+                            doneRows = 0,
+                            schemaImage = imageNameDetail,
+                            schemaText = textDetail
+                        )
+                    }
+                    viewModel.importSchemeToProject(projectDBTable,details)
                     activity.finish()
                     context.startActivity(intent)
                 },
@@ -121,6 +162,36 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(), vi
 
     }
 
+}
+
+fun saveImageFromBitmap(bitmap: Bitmap, context: Context, folderName: String): String {
+    // Создаем директорию, если её нет
+    val dir = File(context.filesDir, folderName).apply {
+        if (!exists()) mkdirs()
+    }
+
+    // Генерируем уникальное имя файла
+    val timestamp = System.currentTimeMillis()
+    val imageName = "IMG_$timestamp" // Добавляем расширение
+
+    // Создаем файл
+    val imageFile = File(dir, "$imageName.jpg")
+
+    try {
+        // Открываем поток для записи
+        FileOutputStream(imageFile).use { output ->
+            // Сжимаем и сохраняем
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)) {
+                throw IOException("Ошибка при сжатии изображения")
+            }
+        }
+
+        return imageName // Возвращаем имя файла
+
+    } catch (e: Exception) {
+        Log.e("SaveImage", "Ошибка при сохранении изображения", e)
+        throw e
+    }
 }
 
 @Composable

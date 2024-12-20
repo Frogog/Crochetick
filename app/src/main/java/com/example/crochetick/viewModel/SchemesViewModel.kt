@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.crochetick.dataClass.model.DetailDBTable
 import com.example.crochetick.dataClass.model.ProjectDBTable
 import com.example.crochetick.dataClass.requestData.CategoriesResponse
+import com.example.crochetick.dataClass.requestData.SchemesResponse
 import com.example.crochetick.instance.RetrofitInstance
 import com.example.crochetick.repositories.CrochetickRepository
 import com.example.crochetick.state.ProjectAddState
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class SchemesViewModel:ViewModel() {
 
@@ -53,8 +56,13 @@ class SchemesViewModel:ViewModel() {
         _uiState.value = _uiState.value.copy(schemeId = schemeId)
     }
 
-    fun importSchemeToProject(){
-
+    fun importSchemeToProject(project:ProjectDBTable,details:List<DetailDBTable>){
+        viewModelScope.launch {
+            CrochetickRepository.instance.insertProjectWithDetails(
+                project,
+                details
+            )
+        }
     }
 
     fun updateSchemesByCategory(){
