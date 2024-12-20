@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -66,6 +67,7 @@ import com.example.crochetick.ui.theme.OnBackground
 import com.example.crochetick.ui.theme.TextSecond
 import java.io.File
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun ShowDetail(navController: NavController, viewModel: ProjectDoViewModel){
     Scaffold(
@@ -105,51 +107,27 @@ fun MainContentShowDetail(innerPaddingValues: PaddingValues,viewModel: ProjectDo
         if (uiState.value.currentDetail?.schemaText =="") dp = 449.dp
         if (uiState.value.currentDetail?.schemaImage !=null){
             val imageFile = File(LocalContext.current.filesDir, "DetailImages/${uiState.value.currentDetail?.schemaImage}.jpg")
-            BoxWithConstraints(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1280f/959f)
-            ) {
-                val state = rememberTransformableState{zoomChange,panChange,rotationChange->
-                    scale = (scale*zoomChange).coerceIn(1f,5f)
-
-                    val extraWidth = (scale-1) * constraints.maxWidth
-                    val extraHeight = (scale-1) * constraints.maxHeight
-
-                    val maxX = extraWidth/2
-                    val maxY = extraHeight/2
-
-                    offset=Offset(
-                        x = (offset.x+panChange.x).coerceIn(-maxX, maxX),
-                        y = (offset.y+panChange.y).coerceIn(-maxY, maxY)
-                    )
-                }
-                AsyncImage(
-                    model = ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(imageFile)
-                        .build(),
-                    contentDescription = "Изображение",
-                    modifier = Modifier.fillMaxWidth().height(dp).graphicsLayer{
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                    }
-                    .transformable(state),
-                    contentScale = ContentScale.FillHeight
-                )
-            }
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(imageFile)
+                    .build(),
+                contentDescription = "Изображение",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Fit
+            )
         }
 
         if (uiState.value.currentDetail?.schemaText !=""){
             ScrollableText(
                 uiState.value.currentDetail?.schemaText!!,
-                paddingValues = PaddingValues(vertical = 10.dp, horizontal = 16.dp)
+                paddingValues = PaddingValues(vertical = 10.dp, horizontal = 16.dp),
             )
         }
         RowIndicator(viewModel,uiState)
     }
 }
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true)
 @Composable
 fun testDetail(){
@@ -157,7 +135,7 @@ fun testDetail(){
         Scaffold {innerPadding->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(innerPadding)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.cow),
@@ -188,12 +166,10 @@ fun testDetail(){
 fun ScrollableText(
     text: String,
     modifier: Modifier = Modifier,
-    height: Dp = 225.dp,
     paddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
     Box(
         modifier = modifier
-            .height(height)
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
@@ -207,7 +183,7 @@ fun ScrollableText(
             style = MaterialTheme.typography.titleLarge
         )
 
-//        // Опционально: добавление скроллбара
+        // Опционально: добавление скроллбара
 //        VerticalScrollbar(
 //            modifier = Modifier.align(Alignment.CenterEnd),
 //            adapter = rememberScrollbarAdapter(scrollState)
@@ -386,7 +362,7 @@ fun SingleDetailTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(Background)
-            .padding(top = 44.dp, bottom = 8.dp, start = 16.dp),
+            .padding(top = 48.dp, bottom = 16.dp, start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

@@ -59,8 +59,7 @@ fun ShowScheme(navController: NavController, innerPadding: PaddingValues, curren
     ) {
         ShowSchemeTopBar(
             "Игрушка одна",
-            {navController.popBackStack()},
-        )
+        ) { navController.popBackStack() }
         ShowSchemeContent(navController)
     }
 }
@@ -108,8 +107,8 @@ fun ShowSchemeContent(navController: NavController = rememberNavController(),id:
                 "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj"+
                 "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj"+
                 "djndnakdnkadnjadnkandjdkadajsbdkadjbadkabdjhbsdkadnbjakndkjadandkjasndkandkaj",
-            height = 314.dp,
-            paddingValues = PaddingValues(top = 10.dp, start = 16.dp, end = 16.dp)
+            paddingValues = PaddingValues(top = 10.dp, start = 16.dp, end = 16.dp),
+            modifier = Modifier.weight(1f)
         )
         FilledTonalButton(
             onClick = {

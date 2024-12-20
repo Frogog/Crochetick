@@ -44,7 +44,7 @@ fun CategoryScreen(navController: NavController, innerPadding: PaddingValues, cu
         Column(
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            CategoryTopBar("Схемы")
+            CategoryTopBar("Схемы",innerPadding)
             SchemesMainContent(MainActivity.categoryArrays,viewModel ,navController)
         }
     }
@@ -103,7 +103,7 @@ fun CategoryCard(item: CategoryData, viewModel: SchemesViewModel, navController:
 }
 
 @Composable
-fun CategoryTopBar(title: String) {
+fun CategoryTopBar(title: String,innerPadding: PaddingValues) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,7 +113,7 @@ fun CategoryTopBar(title: String) {
                 clip = false
             )
             .background(Background)
-            .padding(top = 36.dp, bottom = 16.dp),
+            .padding(top = innerPadding.calculateTopPadding()+12.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -129,7 +129,7 @@ fun CategoryTopBar(title: String) {
 fun PreviewSchemes(){
     CrochetickTheme {
         Column {
-            CategoryTopBar("Схемы")
+            CategoryTopBar("Схемы", innerPadding = PaddingValues(0.dp))
             SchemesMainContent(MainActivity.categoryArrays)
         }
     }

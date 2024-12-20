@@ -1,5 +1,6 @@
 package com.example.crochetick.screen
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ import com.example.crochetick.ui.theme.DoingYellow
 import com.example.crochetick.ui.theme.NoGray
 import com.example.crochetick.ui.theme.ReadyGreen
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun DetailsAll(
     navController: NavController,
@@ -86,11 +88,12 @@ fun MainContent(innerPadding:PaddingValues,onClick:(detailId:Long)->Unit,viewMod
 
 @Composable
 fun DetailList(detailList:List<DetailDBTable>,onClick:(detailId:Long)->Unit){
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         itemsIndexed(detailList){index, item ->
-            if (index==0) Spacer(modifier = Modifier.height(24.dp))
             DetailCard(item,onClick)
-            if (index==detailList.size-1) Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -98,8 +101,7 @@ fun DetailList(detailList:List<DetailDBTable>,onClick:(detailId:Long)->Unit){
 @Composable
 fun DetailCard(item:DetailDBTable,onClick:(detailId:Long)->Unit){
     Card( modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 4.dp,),
+        .fillMaxWidth(),
         onClick = {
 
         }
@@ -205,7 +207,7 @@ fun DetailsAllTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Background)
-                .padding(top = 44.dp, bottom = 8.dp, start = 16.dp),
+                .padding(top = 48.dp, bottom = 16.dp, start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

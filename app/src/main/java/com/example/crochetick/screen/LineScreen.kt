@@ -51,18 +51,12 @@ import kotlin.concurrent.timerTask
 fun LineScreen(navController: NavController,innerPadding: PaddingValues,currentScreen: (String) -> Unit){
     currentScreen("Лента")
     CrochetickTheme {
-        Column {
-            LineTopBar("Лента")
+        Column(
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+        ) {
+            LineTopBar("Лента",innerPadding)
             LineList()
         }
-//        Scaffold (
-//            topBar = { CustomProjectTopBar("Схемы") },
-//            bottomBar = { ProjectBottomBar(navController) }
-//        ){innerPadding->
-//            Column(modifier = Modifier.padding(innerPadding)){
-//                Text("LineScreen")
-//            }
-//        }
     }
 }
 
@@ -197,7 +191,7 @@ fun LineCard(item: LineData, navController: NavController){
 //}
 
 @Composable
-fun LineTopBar(title: String) {
+fun LineTopBar(title: String,innerPadding: PaddingValues) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,7 +201,7 @@ fun LineTopBar(title: String) {
                 clip = false
             )
             .background(Background)
-            .padding(top = 36.dp, bottom = 16.dp),
+            .padding(top = innerPadding.calculateTopPadding()+12.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

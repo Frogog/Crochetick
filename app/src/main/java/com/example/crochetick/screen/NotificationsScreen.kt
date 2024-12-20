@@ -293,7 +293,7 @@ fun NotificationCard(item:NotificationDBTable,viewModel: SettingsViewModel){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                item.hour.toString()+":"+item.minute.toString(),
+                item.hour.toString().padStart(2,'0')+":"+item.minute.toString().padStart(1,'0'),
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(
@@ -351,7 +351,7 @@ fun NotificationTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(Background)
-            .padding(top = 40.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 48.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
