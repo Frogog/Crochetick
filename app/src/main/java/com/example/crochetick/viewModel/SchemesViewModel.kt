@@ -63,8 +63,8 @@ class SchemesViewModel:ViewModel() {
         _uiState.value = _uiState.value.copy(categoryId = categoryId,categoryTitle=categoryTitle)
     }
 
-    fun updateSchemeId(schemeId:Int){
-        _uiState.value = _uiState.value.copy(schemeId = schemeId)
+    fun updateScheme(schemeId:Int,schemeTitle: String){
+        _uiState.value = _uiState.value.copy(schemeId = schemeId, schemeTitle = schemeTitle)
     }
 
     fun importSchemeToProject(project:ProjectDBTable,details:List<DetailDBTable>){

@@ -2,6 +2,7 @@ package com.example.crochetick.screen
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.crochetick.MainActivity
+import com.example.crochetick.R
 import com.example.crochetick.TrashCan.Usual
 import com.example.crochetick.activitiy.ProjectDoActivity
 import com.example.crochetick.dataClass.LineData
@@ -86,7 +89,6 @@ fun LineCard(item: LineData, navController: NavController){
             .padding(horizontal = 8.dp, vertical = 4.dp),
             elevation = CardDefaults.elevatedCardElevation(3.dp),
             onClick = {
-                navController.navigate("showScheme")
             }
         )
         {
@@ -118,12 +120,8 @@ fun LineCard(item: LineData, navController: NavController){
                     }
                 }
                 if (item.image!=null){
-                    val imageFile = File(context.filesDir, "ProjectImages/${item.image}.jpg")
-                    AsyncImage(
-                        model = ImageRequest
-                            .Builder(context)
-                            .data(imageFile)
-                            .build(),
+                    Image(
+                        painter = painterResource(id = R.drawable.lane_image),
                         contentDescription = "Изображение",
                         modifier = Modifier.height(250.dp).fillMaxWidth().clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.FillHeight,
@@ -139,10 +137,12 @@ fun LineCard(item: LineData, navController: NavController){
                             item.title,
                             style = MaterialTheme.typography.bodyLarge
                         )
-                        Text(
-                            item.text,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        if (item.text!=null){
+                            Text(
+                                item.text,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }

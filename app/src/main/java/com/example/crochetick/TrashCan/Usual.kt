@@ -18,7 +18,7 @@ import java.util.Locale
 class Usual {
     companion object {
         val formatterEn = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val formatterRu = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val formatterRu = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         //Работа с датами
         fun EnToRu(enDateText:String):String{
             return formatterRu.format(formatterEn.parse(enDateText)?.time).toString()

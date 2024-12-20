@@ -76,6 +76,11 @@ fun CategoryList(schemesList:List<CategoriesResponse>, viewModel: SchemesViewMod
 @Composable
 fun CategoryCard(item: CategoriesResponse, viewModel: SchemesViewModel, navController: NavController){
     ElevatedCard(
+        onClick = {
+            viewModel.updateCategory(item.id,item.name)
+            viewModel.updateSchemesByCategory()
+            navController.navigate("showCategory")
+        },
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(3.dp),
     ){
@@ -91,11 +96,7 @@ fun CategoryCard(item: CategoriesResponse, viewModel: SchemesViewModel, navContr
                 style = MaterialTheme.typography.titleSmall
             )
             IconButton(
-                onClick = {
-                    viewModel.updateCategory(item.id,item.name)
-                    viewModel.updateSchemesByCategory()
-                    navController.navigate("showCategory")
-                },
+                onClick = {},
                 modifier = Modifier.size(48.dp).padding(start = 8.dp),
             ) {
                 Icon(
